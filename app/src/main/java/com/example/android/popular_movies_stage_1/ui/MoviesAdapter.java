@@ -4,6 +4,12 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.example.android.popular_movies_stage_1.Movies;
+
+import java.util.List;
 
 /**
  * Created by fifiv on 31/01/2018.
@@ -12,11 +18,23 @@ import android.widget.BaseAdapter;
 public class MoviesAdapter extends BaseAdapter {
 
     private Context mContext;
+    private List<Movies> mMoviesList;
 
+
+    /**
+     * Constructor of the adapter class
+     *
+     * @param context
+     * @param moviesList
+     */
+    public MoviesAdapter(Context context, List<Movies> moviesList) {
+        mContext = context;
+        mMoviesList = moviesList;
+    }
 
     @Override
     public int getCount() {
-        return 0;
+        return mMoviesList.size();
     }
 
     @Override
@@ -29,8 +47,28 @@ public class MoviesAdapter extends BaseAdapter {
         return 0;
     }
 
+    /**
+     * Create a new Image View for each item references by the adapter
+     *
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        return null;
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+        ImageView movieImage;
+
+        if (convertView == null) {
+            movieImage = new ImageView(mContext);
+            movieImage.setAdjustViewBounds(true);
+            movieImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            movieImage.setPadding(8,8,8,8);
+        } else {
+            movieImage = (ImageView) convertView;
+        }
+
+        return movieImage;
     }
 }
