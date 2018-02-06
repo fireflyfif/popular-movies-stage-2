@@ -1,26 +1,34 @@
 package com.example.android.popular_movies_stage_1.ui;
 
 import android.content.Context;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.android.popular_movies_stage_1.Movies;
+import com.example.android.popular_movies_stage_1.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
 
 /**
  * Created by fifiv on 31/01/2018.
  */
 
-public class MoviesAdapter extends BaseAdapter {
+public class MoviesAdapter extends ArrayAdapter<Movies> {
 
     private Context mContext;
     private List<Movies> mMoviesList;
 
+
+    private static final String MOVIES_BASE_URL = "http://image.tmdb.org/t/p/";
+    private static final String FILE_SIZE = "w185";
+    private static final String TEMP_POSTER_PATH = "/coss7RgL0NH6g4fC2s5atvf3dFO.jpg";
 
     /**
      * Constructor of the adapter class
@@ -29,24 +37,10 @@ public class MoviesAdapter extends BaseAdapter {
      * @param moviesList
      */
     public MoviesAdapter(Context context, List<Movies> moviesList) {
-        mContext = context;
-        mMoviesList = moviesList;
+
+        super(context, 0, moviesList);
     }
 
-    @Override
-    public int getCount() {
-        return mMoviesList.size();
-    }
-
-    @Override
-    public Object getItem(int i) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return 0;
-    }
 
     /**
      * Create a new Image View for each item references by the adapter
@@ -59,16 +53,27 @@ public class MoviesAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        ImageView movieImage;
+        Movies movies = getItem(position);
+
 
         if (convertView == null) {
-            movieImage = new ImageView(mContext);
-            movieImage.setAdjustViewBounds(true);
-            movieImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            movieImage.setPadding(8,8,8,8);
-        } else {
-            movieImage = (ImageView) convertView;
+            convertView = LayoutInflater.from(getContext()).inflate(
+                    R.layout.movie_item, parent, false);
+
+//            movieImage = new ImageView(mContext);
+//            movieImage.setAdjustViewBounds(true);
+//            movieImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
+
+        ImageView movieImage = convertView.findViewById(R.id.movie_image);
+        movieImage.setImageResource(movies.getIntPoster());
+        //String url = MOVIES_BASE_URL + IMAGE_SIZE + movies.getPoster();
+//            String url = MOVIES_BASE_URL + FILE_SIZE + TEMP_POSTER_PATH;
+//            Picasso.with(mContext)
+//                    .load(url)
+//                    .centerCrop()
+//                    .into(movieImage);
+
 
         return movieImage;
     }

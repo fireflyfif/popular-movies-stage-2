@@ -21,6 +21,9 @@ public class Movies {
      */
     private String mMoviePoster;
 
+    // Temp Movie Poster Path
+    private int mMoviePosterPath;
+
     /**
      * Vote Average
      */
@@ -31,6 +34,9 @@ public class Movies {
      */
     private String mPlotSynopsis;
 
+    public Movies(int moviePoster) {
+        mMoviePosterPath = moviePoster;
+    }
 
     /**
      * Create new Movies object
@@ -49,6 +55,10 @@ public class Movies {
         mMoviePoster = moviePoster;
         mVoteAverage = voteAverage;
         mPlotSynopsis = plotSynopsis;
+    }
+
+    public int getIntPoster() {
+        return mMoviePosterPath;
     }
 
     /**
