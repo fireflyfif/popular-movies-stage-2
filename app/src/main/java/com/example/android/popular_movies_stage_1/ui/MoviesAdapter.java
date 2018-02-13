@@ -2,17 +2,22 @@ package com.example.android.popular_movies_stage_1.ui;
 
 import android.content.Context;
 import android.media.Image;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.android.popular_movies_stage_1.Movies;
 import com.example.android.popular_movies_stage_1.R;
+import com.example.android.popular_movies_stage_1.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,61 +25,72 @@ import java.util.List;
  * Created by fifiv on 31/01/2018.
  */
 
-public class MoviesAdapter extends ArrayAdapter<Movies> {
+public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder> {
 
     private Context mContext;
     private List<Movies> mMoviesList;
 
 
-    private static final String MOVIES_BASE_URL = "http://image.tmdb.org/t/p/";
-    private static final String FILE_SIZE = "w185";
-    private static final String TEMP_POSTER_PATH = "/coss7RgL0NH6g4fC2s5atvf3dFO.jpg";
 
-    /**
-     * Constructor of the adapter class
-     *
-     * @param context
-     * @param moviesList
-     */
-    public MoviesAdapter(Context context, List<Movies> moviesList) {
-
-        super(context, 0, moviesList);
+    public MoviesAdapter(Context context, List<Movies> movies) {
+        mContext = context;
+        mMoviesList = movies;
     }
 
 
-    /**
-     * Create a new Image View for each item references by the adapter
-     *
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
-     */
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public class MoviesAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        Movies movies = getItem(position);
+        public final ImageView moviePosterThumbnail;
 
+        public MoviesAdapterViewHolder(View itemView) {
+            super(itemView);
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.movie_item, parent, false);
-
-//            movieImage = new ImageView(mContext);
-//            movieImage.setAdjustViewBounds(true);
-//            movieImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            moviePosterThumbnail = itemView.findViewById(R.id.movie_image);
         }
-
-        ImageView movieImage = convertView.findViewById(R.id.movie_image);
-        movieImage.setImageResource(movies.getIntPoster());
-        //String url = MOVIES_BASE_URL + IMAGE_SIZE + movies.getPoster();
-//            String url = MOVIES_BASE_URL + FILE_SIZE + TEMP_POSTER_PATH;
-//            Picasso.with(mContext)
-//                    .load(url)
-//                    .centerCrop()
-//                    .into(movieImage);
+    }
 
 
-        return movieImage;
+    @Override
+    public MoviesAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate
+                (R.layout.movie_item, parent, false);
+
+        return new MoviesAdapterViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(MoviesAdapterViewHolder holder, int position) {
+
+        Movies moviePoster = mMoviesList.get(position);
+        String moviePosterPath = moviePoster.getPoster();
+
+        Picasso.with(mContext)
+                // Not sure if this will work
+                // .load(moviePosterPath)
+                .load(NetworkUtils.buildPosterPathUrl(moviePosterPath))
+                // Call resize before centerCrop, so that it won't throw an exception
+                .resize(250, 400)
+                .centerCrop()
+                .placeholder(R.drawable.movie_poster)
+                .into(holder.moviePosterThumbnail);
+    }
+
+    @Override
+    public int getItemCount() {
+        if (mMoviesList == null) {
+            return 0;
+        }
+        return mMoviesList.size();
+    }
+
+    /**
+     * This method is used to set the movies data on a MoviesAdapter it there is one.
+     *
+     * @param movieData The new movie data to be displayed
+     */
+    public void setMovieData(List<Movies> movieData) {
+        mMoviesList = movieData;
+        notifyDataSetChanged();
     }
 }

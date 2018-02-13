@@ -6,6 +6,8 @@ package com.example.android.popular_movies_stage_1;
 
 public class Movies {
 
+    private String mMovieId;
+
     /**
      * Movie Title
      */
@@ -21,22 +23,17 @@ public class Movies {
      */
     private String mMoviePoster;
 
-    // Temp Movie Poster Path
-    private int mMoviePosterPath;
-
     /**
      * Vote Average
      */
-    private String mVoteAverage;
+    private double mVoteAverage;
 
     /**
      * Plot Synopsis
      */
     private String mPlotSynopsis;
 
-    public Movies(int moviePoster) {
-        mMoviePosterPath = moviePoster;
-    }
+
 
     /**
      * Create new Movies object
@@ -47,9 +44,10 @@ public class Movies {
      * @param voteAverage  is the average vote for the movie
      * @param plotSynopsis is the description of the movie
      */
-    public Movies(String movieTitle, String releaseDate, String moviePoster,
-                  String voteAverage, String plotSynopsis) {
+    public Movies(String movieId, String movieTitle, String releaseDate, String moviePoster,
+                  double voteAverage, String plotSynopsis) {
 
+        mMovieId = movieId;
         mMovieTitle = movieTitle;
         mReleaseDate = releaseDate;
         mMoviePoster = moviePoster;
@@ -57,8 +55,9 @@ public class Movies {
         mPlotSynopsis = plotSynopsis;
     }
 
-    public int getIntPoster() {
-        return mMoviePosterPath;
+
+    public String getMovieId() {
+        return mMovieId;
     }
 
     /**
@@ -85,7 +84,7 @@ public class Movies {
     /**
      * Get the Vote Average
      */
-    public String getVoteAverage() {
+    public double getVoteAverage() {
         return mVoteAverage;
     }
 
