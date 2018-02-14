@@ -1,23 +1,18 @@
 package com.example.android.popular_movies_stage_1.ui;
 
 import android.content.Context;
-import android.media.Image;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.android.popular_movies_stage_1.Movies;
 import com.example.android.popular_movies_stage_1.R;
 import com.example.android.popular_movies_stage_1.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,15 +25,23 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     private Context mContext;
     private List<Movies> mMoviesList;
 
+    private static final String MOVIE_DETAILS_KEY = "movie_parcel";
 
 
+    /**
+     * Constructor for MoviesAdapter
+     *
+     * @param context  Get the context of the activity
+     * @param movies   List of movies
+     */
     public MoviesAdapter(Context context, List<Movies> movies) {
         mContext = context;
         mMoviesList = movies;
     }
 
 
-    public class MoviesAdapterViewHolder extends RecyclerView.ViewHolder {
+    public class MoviesAdapterViewHolder extends RecyclerView.ViewHolder implements
+            View.OnClickListener {
 
         public final ImageView moviePosterThumbnail;
 
@@ -46,6 +49,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
             super(itemView);
 
             moviePosterThumbnail = itemView.findViewById(R.id.movie_image);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(view.getContext(), DetailActivity.class);
+            Movies currentMovie = mMoviesList.get(getAdapterPosition());
+            intent.putExtra(MOVIE_DETAILS_KEY, currentMovie);
+            mContext.startActivity(intent);
         }
     }
 
