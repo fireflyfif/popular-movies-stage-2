@@ -23,13 +23,15 @@ public class TheMovieDbJsonUtils {
 
     private static final String LOG_TAG = TheMovieDbJsonUtils.class.getSimpleName();
 
-    private static final String ERROR_CODE = "status_error";
+    private static final String ERROR_CODE = "status_code";
 
     private static final String TMDB_RESULTS = "results";
 
     private static final String TMDB_ID = "id";
 
     private static final String TMDB_POSTER_PATH = "poster_path";
+
+    private static final String TMDB_BACKDROP_PATH = "backdrop_path";
 
     private static final String TMDB_ORIGINAL_TITLE = "original_title";
 
@@ -53,7 +55,7 @@ public class TheMovieDbJsonUtils {
 
             JSONObject moviesJson = new JSONObject(moviesJsonString);
 
-            // If there is an error
+            // If there is an error fetching the data from the server
             if (moviesJson.has(ERROR_CODE)) {
                 int errorCode = moviesJson.getInt(ERROR_CODE);
                 Log.e(LOG_TAG, "Parse json error code: " + errorCode);
@@ -80,6 +82,8 @@ public class TheMovieDbJsonUtils {
 
                 String movieTitle = currentMovie.getString(TMDB_ORIGINAL_TITLE);
 
+                String movieBackdropPath = currentMovie.getString(TMDB_BACKDROP_PATH);
+
                 String plotSynopsis = currentMovie.getString(TMDB_OVERVIEW);
 
                 double userRating = currentMovie.getDouble(TMDB_VOTE_AVERAGE);
@@ -90,7 +94,7 @@ public class TheMovieDbJsonUtils {
                         "user rating: " + userRating + "release date: " + releaseDate);
 
                 Movies movies = new Movies(movieId, movieTitle, releaseDate, posterPath,
-                        userRating, plotSynopsis);
+                        movieBackdropPath, userRating, plotSynopsis);
                 moviesList.add(movies);
             }
 

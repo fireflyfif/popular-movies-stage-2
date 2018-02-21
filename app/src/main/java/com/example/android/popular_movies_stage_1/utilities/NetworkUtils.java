@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.example.android.popular_movies_stage_1.BuildConfig;
+import com.example.android.popular_movies_stage_1.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,7 @@ public final class NetworkUtils {
 
     private static final String IMAGES_BASE_URL = "https://image.tmdb.org/t/p/";
 
-    private static final String FILE_SIZE = "w185";
+    private static final String FILE_SIZE = "w342";
 
     private static final String MOVIES_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -42,6 +43,16 @@ public final class NetworkUtils {
 
 
     // TODO HIDE API KEY before pushing to GitHub !!!
+
+    private static String sortOrderPreference(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        String sortOrderKey = context.getString(R.string.pref_sort_by_key);
+        String sortOrderDefault = context.getString(R.string.pref_sort_by_popular);
+
+        return sharedPreferences.getString(sortOrderKey, sortOrderDefault);
+
+    }
 
     // Write this code after I add SharedPreference
     public static URL buildUrl(String apiKey, String sortOrder) {
@@ -87,9 +98,16 @@ public final class NetworkUtils {
     public static String buildPosterPathUrl(String posterPath) {
 
         String posterPathUrlString = IMAGES_BASE_URL + FILE_SIZE + posterPath;
-        Log.v(TAG, "Built URI " + posterPathUrlString);
+        Log.v(TAG, "Built URI for Poster: " + posterPathUrlString);
 
         return posterPathUrlString;
+    }
+
+    public static String buildPosterBackdropUrl(String backdropPath) {
+        String backdropUrlString = IMAGES_BASE_URL + FILE_SIZE + backdropPath;
+        Log.v(TAG, "Built URI for Backdrop: " + backdropUrlString);
+
+        return backdropUrlString;
     }
 
     /**

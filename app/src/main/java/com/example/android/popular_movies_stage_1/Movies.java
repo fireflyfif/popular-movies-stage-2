@@ -27,6 +27,11 @@ public class Movies implements Parcelable{
     private String mMoviePoster;
 
     /**
+     * Movie Second Image Poster
+     */
+    private String mMovieBackdrop;
+
+    /**
      * Vote Average
      */
     private double mVoteAverage;
@@ -41,19 +46,22 @@ public class Movies implements Parcelable{
     /**
      * Create new Movies object
      *
-     * @param movieTitle   is the title of the movie
-     * @param releaseDate  is the release date of the movie
-     * @param moviePoster  is the poster of the movie
-     * @param voteAverage  is the average vote for the movie
+     * @param movieId is the Id of the movie
+     * @param movieTitle is the title of the movie
+     * @param releaseDate is the release date of the movie
+     * @param moviePoster is the poster of the movie
+     * @param movieBackdrop is the second movie image of the movie
+     * @param voteAverage is the average vote for the movie
      * @param plotSynopsis is the description of the movie
      */
     public Movies(String movieId, String movieTitle, String releaseDate, String moviePoster,
-                  double voteAverage, String plotSynopsis) {
+                  String movieBackdrop, double voteAverage, String plotSynopsis) {
 
         mMovieId = movieId;
         mMovieTitle = movieTitle;
         mReleaseDate = releaseDate;
         mMoviePoster = moviePoster;
+        mMovieBackdrop = movieBackdrop;
         mVoteAverage = voteAverage;
         mPlotSynopsis = plotSynopsis;
     }
@@ -64,6 +72,7 @@ public class Movies implements Parcelable{
         mMovieTitle = in.readString();
         mReleaseDate = in.readString();
         mMoviePoster = in.readString();
+        mMovieBackdrop = in.readString();
         mVoteAverage = in.readDouble();
         mPlotSynopsis = in.readString();
     }
@@ -87,7 +96,7 @@ public class Movies implements Parcelable{
     /**
      * Get the Movie's Title
      */
-    public String getMoviewTitle() {
+    public String getMovieTitle() {
         return mMovieTitle;
     }
 
@@ -103,6 +112,13 @@ public class Movies implements Parcelable{
      */
     public String getPoster() {
         return mMoviePoster;
+    }
+
+    /**
+     * Get the Movie's Second Image
+     */
+    public String getMovieBackdrop() {
+        return mMovieBackdrop;
     }
 
     /**
@@ -130,6 +146,7 @@ public class Movies implements Parcelable{
         parcel.writeString(mMovieTitle);
         parcel.writeString(mReleaseDate);
         parcel.writeString(mMoviePoster);
+        parcel.writeString(mMovieBackdrop);
         parcel.writeDouble(mVoteAverage);
         parcel.writeString(mPlotSynopsis);
     }

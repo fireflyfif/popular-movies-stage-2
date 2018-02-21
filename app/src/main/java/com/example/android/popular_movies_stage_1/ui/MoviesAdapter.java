@@ -82,8 +82,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
                 // .load(moviePosterPath)
                 .load(NetworkUtils.buildPosterPathUrl(moviePosterPath))
                 // Call resize before centerCrop, so that it won't throw an exception
-                .resize(250, 400)
-                .centerCrop()
+//                .resize(250, 400)
+//                .centerCrop()
                 .placeholder(R.drawable.movie_poster)
                 .into(holder.moviePosterThumbnail);
     }
