@@ -78,12 +78,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
         String moviePosterPath = moviePoster.getPoster();
 
         Picasso.with(mContext)
-                // Not sure if this will work
-                // .load(moviePosterPath)
                 .load(NetworkUtils.buildPosterPathUrl(moviePosterPath))
-                // Call resize before centerCrop, so that it won't throw an exception
-//                .resize(250, 400)
-//                .centerCrop()
                 .placeholder(R.drawable.movie_poster)
                 .into(holder.moviePosterThumbnail);
     }

@@ -31,28 +31,12 @@ public final class NetworkUtils {
 
     private static final String MOVIES_BASE_URL = "https://api.themoviedb.org/3";
 
-    private static final String TMDB_POSTER_PATH = "poster_path";
-
     private static final String MOVIE_PATH = "movie";
-
-    private static final String POPULAR_PATH = "popular";
-
-    private static final String TOP_RATED_PATH = "top_rated";
 
     private static final String API_KEY_PARAM = "api_key";
 
 
     // TODO HIDE API KEY before pushing to GitHub !!!
-
-    private static String sortOrderPreference(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        String sortOrderKey = context.getString(R.string.pref_sort_by_key);
-        String sortOrderDefault = context.getString(R.string.pref_sort_by_popular);
-
-        return sharedPreferences.getString(sortOrderKey, sortOrderDefault);
-
-    }
 
     // Write this code after I add SharedPreference
     public static URL buildUrl(String apiKey, String sortOrder) {

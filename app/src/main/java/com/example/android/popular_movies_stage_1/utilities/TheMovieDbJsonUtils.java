@@ -1,6 +1,5 @@
 package com.example.android.popular_movies_stage_1.utilities;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -10,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;

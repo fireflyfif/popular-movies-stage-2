@@ -42,17 +42,16 @@ public class Movies implements Parcelable{
     private String mPlotSynopsis;
 
 
-
     /**
      * Create new Movies object
      *
-     * @param movieId is the Id of the movie
-     * @param movieTitle is the title of the movie
-     * @param releaseDate is the release date of the movie
-     * @param moviePoster is the poster of the movie
+     * @param movieId       is the Id of the movie
+     * @param movieTitle    is the title of the movie
+     * @param releaseDate   is the release date of the movie
+     * @param moviePoster   is the poster of the movie
      * @param movieBackdrop is the second movie image of the movie
-     * @param voteAverage is the average vote for the movie
-     * @param plotSynopsis is the description of the movie
+     * @param voteAverage   is the average vote for the movie
+     * @param plotSynopsis  is the description of the movie
      */
     public Movies(String movieId, String movieTitle, String releaseDate, String moviePoster,
                   String movieBackdrop, double voteAverage, String plotSynopsis) {
@@ -65,7 +64,6 @@ public class Movies implements Parcelable{
         mVoteAverage = voteAverage;
         mPlotSynopsis = plotSynopsis;
     }
-
 
     protected Movies(Parcel in) {
         mMovieId = in.readString();
@@ -89,6 +87,9 @@ public class Movies implements Parcelable{
         }
     };
 
+    /**
+     * Get the Movie's Id
+     */
     public String getMovieId() {
         return mMovieId;
     }
