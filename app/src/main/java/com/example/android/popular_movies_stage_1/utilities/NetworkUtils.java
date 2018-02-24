@@ -36,9 +36,13 @@ public final class NetworkUtils {
     private static final String API_KEY_PARAM = "api_key";
 
 
-    // TODO HIDE API KEY before pushing to GitHub !!!
-
-    // Write this code after I add SharedPreference
+    /**
+     * Retrieves the proper URL to query for the movie data.
+     *
+     * @param apiKey    uses the API KEY for fetching data
+     * @param sortOrder used to fetch different content according to user's preferences
+     * @return URL to query movie data
+     */
     public static URL buildUrl(String apiKey, String sortOrder) {
 
         Uri movieQueryUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
@@ -53,26 +57,6 @@ public final class NetworkUtils {
 
             Log.v(TAG, "Movie Query Url: " + movieQueryUrl);
             return movieQueryUrl;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    // This method gives the right path to the Posters,
-    // but when it is passed to the .load() method at @MoviesAdapter it does not show
-    // the correct movie poster
-    public static URL buildUrlForPosters(String posterPath) {
-        Uri buildUri = Uri.parse(IMAGES_BASE_URL).buildUpon()
-                .appendPath(FILE_SIZE)
-                .appendPath(posterPath)
-                .build();
-
-        URL url;
-        try {
-            url = new URL(buildUri.toString());
-            Log.v(TAG, "Built URI " + url);
-            return url;
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
@@ -95,7 +79,7 @@ public final class NetworkUtils {
     }
 
     /**
-     * this method returns the entire result from the HTTP response.
+     * This method returns the entire result from the HTTP response.
      *
      * @param url the URL to fetch the HTTP response from.
      * @return The contents of the HTTP response, null if no response

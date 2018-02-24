@@ -24,4 +24,9 @@
 
     <string name="vote_range">&#032;/10</string>
     <string name="error_message">An error has occurred.\nPlease check your internet connection.</string>
+    <string name="overview_label">Overview</string>
+    <string name="release_date_label">Release Date</string>
+    <string name="description_backdrop_image">Expandable image background of the movie</string>
+    <string name="description_movie_poster">Poster of the movie</string>
+    <string name="original_title_label">Original Title</string>
 </resources>

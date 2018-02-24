@@ -1,15 +1,13 @@
 package com.example.android.popular_movies_stage_1.utilities;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.android.popular_movies_stage_1.BuildConfig;
-import com.example.android.popular_movies_stage_1.Movies;
-import com.example.android.popular_movies_stage_1.R;
+import com.example.android.popular_movies_stage_1.models.Movies;
 import com.example.android.popular_movies_stage_1.ui.MainActivityFragment;
-import com.example.android.popular_movies_stage_1.ui.MoviesAdapter;
+import com.example.android.popular_movies_stage_1.adapters.MoviesAdapter;
 
 import java.lang.ref.WeakReference;
 import java.net.URL;
@@ -23,8 +21,12 @@ public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
 
     private MoviesAdapter mAdapter;
     private WeakReference<MainActivityFragment> appReference;
-    private ProgressBar mProgressBar;
+    private MainActivityView mMainActivityView;
+    //private ProgressBar mProgressBar;
 
+    public interface MainActivityView {
+        void showProgress(boolean visible);
+    }
 
     /**
      * Constructor for FetchMoviesTask Class
@@ -33,23 +35,17 @@ public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
      * @param context
      */
     public FetchMoviesTask(MoviesAdapter moviesAdapter, MainActivityFragment context,
-                           ProgressBar progressBar) {
+                           MainActivityView mainActivityView) {
         mAdapter = moviesAdapter;
         appReference = new WeakReference<>(context);
-        mProgressBar = progressBar;
+        mMainActivityView = mainActivityView;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-//        MainActivityFragment activityFragment = appReference.get();
-//        if (activityFragment == null || activityFragment.getActivity().isFinishing())
-//            return;
-//
-//        ProgressBar loadingIndicator = activityFragment
-//                .getActivity().findViewById(R.id.loading_indicator);
 
-        mProgressBar.setVisibility(View.VISIBLE);
+        //mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -59,7 +55,6 @@ public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
             return null;
         }
 
-        // What this line does?
         String sortOrder = urls[0];
 
         URL moviesRequestUrl = NetworkUtils.buildUrl(BuildConfig.API_KEY, sortOrder);
@@ -81,7 +76,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
     @Override
     protected void onPostExecute(List<Movies> movies) {
 
-        mProgressBar.setVisibility(View.INVISIBLE);
+        //mProgressBar.setVisibility(View.INVISIBLE);
 
         if (movies != null) {
             mAdapter.setMovieData(movies);

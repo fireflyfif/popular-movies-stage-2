@@ -1,7 +1,6 @@
 package com.example.android.popular_movies_stage_1.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,11 +21,16 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.android.popular_movies_stage_1.Movies;
 import com.example.android.popular_movies_stage_1.R;
+import com.example.android.popular_movies_stage_1.adapters.MoviesAdapter;
+import com.example.android.popular_movies_stage_1.models.Movies;
 import com.example.android.popular_movies_stage_1.utilities.FetchMoviesTask;
+import com.example.android.popular_movies_stage_1.utilities.FetchMoviesTask.MainActivityView;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
@@ -34,31 +38,31 @@ import java.util.ArrayList;
  */
 
 public class MainActivityFragment extends Fragment implements
-        SharedPreferences.OnSharedPreferenceChangeListener{
+        SharedPreferences.OnSharedPreferenceChangeListener, MainActivityView {
+
+    private MainActivityView mMainView;
 
     private static final String LOG_TAG = "MainActivityFragment";
 
     private static final String SAVE_STATE_KEY = "save_state";
 
     private static final String RECYCLER_VIEW_STATE = "list_state";
-
+    @BindView(R.id.recycler_grid_view)
+    RecyclerView mRecyclerGridView;
+    @BindView(R.id.loading_indicator)
+    ProgressBar mLoadingIndicator;
+    @BindView(R.id.error_message_display)
+    TextView mErrorMessage;
     private Parcelable savedRecyclerViewState;
-
     private MoviesAdapter mMoviesAdapter;
-
-    private RecyclerView mRecyclerGridView;
-
-    private ProgressBar mLoadingIndicator;
-
-    private TextView mErrorMessage;
-
     // Declare the movie list as an ArrayList,
     // because Parcelable saves state of ArrayList, but not ListView
     private ArrayList<Movies> mMoviesList;
 
 
     // Mandatory empty constructor
-    public MainActivityFragment() {}
+    public MainActivityFragment() {
+    }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
@@ -74,6 +78,7 @@ public class MainActivityFragment extends Fragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //((AppCompatActivity)getActivity()).setSupportActionBar(mToolbarMain);
 
         Log.v(LOG_TAG, "onCreate called Now!");
 
@@ -87,13 +92,11 @@ public class MainActivityFragment extends Fragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(R.layout.fragment_activity_main, container, false);
 
-        mRecyclerGridView = rootView.findViewById(R.id.recycler_grid_view);
-        mLoadingIndicator = rootView.findViewById(R.id.loading_indicator);
-        mErrorMessage = rootView.findViewById(R.id.error_message_display);
+        ButterKnife.bind(this, rootView);
 
         mMoviesList = new ArrayList<>();
 
@@ -111,7 +114,6 @@ public class MainActivityFragment extends Fragment implements
         // Call onRestoreInstanceState when the data has been reattached to the mRecyclerGridView
         mRecyclerGridView.getLayoutManager().onRestoreInstanceState(savedRecyclerViewState);
 
-
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .registerOnSharedPreferenceChangeListener(this);
 
@@ -123,7 +125,6 @@ public class MainActivityFragment extends Fragment implements
             Log.v(LOG_TAG, "There is NO internet connection");
             showErrorMessage();
         }
-
         return rootView;
     }
 
@@ -138,7 +139,6 @@ public class MainActivityFragment extends Fragment implements
         super.onSaveInstanceState(outState);
     }
 
-
     /**
      * Check for Network Connection
      */
@@ -152,14 +152,14 @@ public class MainActivityFragment extends Fragment implements
 
         boolean haveNetConnection = false;
         // Get details on the currently active default data network
-        if  (networkInfo != null && networkInfo.isConnected()) {
+        if (networkInfo != null && networkInfo.isConnected()) {
             haveNetConnection = true;
         }
         return haveNetConnection;
     }
 
     /**
-     * Show error message when there is a problem fetching the data or
+     * Method that shows error message when there is a problem fetching the data or
      * there is no internet connection
      */
     private void showErrorMessage() {
@@ -169,7 +169,6 @@ public class MainActivityFragment extends Fragment implements
         // Show the error
         mErrorMessage.setVisibility(View.VISIBLE);
     }
-
 
     /**
      * Method for loading movies using user's preference sort order
@@ -181,7 +180,7 @@ public class MainActivityFragment extends Fragment implements
                 .getDefaultSharedPreferences(getActivity());
 
         // Execute the network call on a separate background thread
-        FetchMoviesTask task = new FetchMoviesTask(mMoviesAdapter, this, mLoadingIndicator);
+        FetchMoviesTask task = new FetchMoviesTask(mMoviesAdapter, this, mMainView);
 
         // Update the recycler view with the user's preferences.
         String sortOrderKey = getString(R.string.pref_sort_by_key);
@@ -228,5 +227,10 @@ public class MainActivityFragment extends Fragment implements
         super.onDestroyView();
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void showProgress(boolean visible) {
+        mLoadingIndicator.setVisibility(visible?View.VISIBLE:View.GONE);
     }
 }

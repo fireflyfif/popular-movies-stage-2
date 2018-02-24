@@ -1,4 +1,4 @@
-package com.example.android.popular_movies_stage_1;
+package com.example.android.popular_movies_stage_1.ui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.example.android.popular_movies_stage_1.ui.SettingsActivity;
+import com.example.android.popular_movies_stage_1.R;
 
 
 public class MainActivity extends AppCompatActivity {

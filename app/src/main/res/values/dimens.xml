@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="appbar_height">280dp</dimen>
+    <dimen name="expanded_title_margin">16dp</dimen>
+    <dimen name="poster_height">150dp</dimen>
+    <dimen name="poster_width">100dp</dimen>
+    <dimen name="margin_horizontal_8dp">8dp</dimen>
+    <dimen name="margin_horizontal_16dp">16dp</dimen>
+    <dimen name="margin_vertical_8dp">8dp</dimen>
+    <dimen name="margin_vertical_16dp">16dp</dimen>
+    <dimen name="vote_range_text">20sp</dimen>
+    <dimen name="divider_height">1dp</dimen>
+</resources>
