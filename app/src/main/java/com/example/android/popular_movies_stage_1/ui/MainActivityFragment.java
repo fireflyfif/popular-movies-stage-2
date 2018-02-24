@@ -40,7 +40,6 @@ import butterknife.ButterKnife;
 public class MainActivityFragment extends Fragment implements
         SharedPreferences.OnSharedPreferenceChangeListener, MainActivityView {
 
-    private MainActivityView mMainView;
 
     private static final String LOG_TAG = "MainActivityFragment";
 
@@ -166,7 +165,7 @@ public class MainActivityFragment extends Fragment implements
         // Hide the currently visible data
         mRecyclerGridView.setVisibility(View.INVISIBLE);
 
-        // Show the error
+        // Show the error message
         mErrorMessage.setVisibility(View.VISIBLE);
     }
 
@@ -180,13 +179,15 @@ public class MainActivityFragment extends Fragment implements
                 .getDefaultSharedPreferences(getActivity());
 
         // Execute the network call on a separate background thread
-        FetchMoviesTask task = new FetchMoviesTask(mMoviesAdapter, this, mMainView);
+        FetchMoviesTask task = new FetchMoviesTask(mMoviesAdapter, this, this);
 
         // Update the recycler view with the user's preferences.
         String sortOrderKey = getString(R.string.pref_sort_by_key);
         String sortOrderDefault = getString(R.string.pref_sort_by_popular);
         String sortOrder = sharedPreferences.getString(sortOrderKey, sortOrderDefault);
 
+        // Execute fetching the movie data from a background thread
+        // sortOrder loads the movie data with the default "popular" sorting setting
         task.execute(sortOrder);
     }
 
@@ -231,6 +232,13 @@ public class MainActivityFragment extends Fragment implements
 
     @Override
     public void showProgress(boolean visible) {
-        mLoadingIndicator.setVisibility(visible?View.VISIBLE:View.GONE);
+
+        // Show Progress Bar if the movies are being fetched from the server,
+        // Hide if not
+        if (visible) {
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        } else {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+        }
     }
 }

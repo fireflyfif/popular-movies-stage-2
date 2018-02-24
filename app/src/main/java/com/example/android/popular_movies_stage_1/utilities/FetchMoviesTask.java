@@ -22,8 +22,12 @@ public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
     private MoviesAdapter mAdapter;
     private WeakReference<MainActivityFragment> appReference;
     private MainActivityView mMainActivityView;
-    //private ProgressBar mProgressBar;
 
+    /**
+     * Create interface that will show the Progress Bar when the movie data is loading
+     * it will hide it when there is not data to fetch (e.g. no internet connection)
+     *
+     */
     public interface MainActivityView {
         void showProgress(boolean visible);
     }
@@ -31,8 +35,8 @@ public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
     /**
      * Constructor for FetchMoviesTask Class
      *
-     * @param moviesAdapter
-     * @param context
+     * @param moviesAdapter Gets the movie adapter
+     * @param context Uses the context of the activity
      */
     public FetchMoviesTask(MoviesAdapter moviesAdapter, MainActivityFragment context,
                            MainActivityView mainActivityView) {
@@ -45,7 +49,8 @@ public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
     protected void onPreExecute() {
         super.onPreExecute();
 
-        //mProgressBar.setVisibility(View.VISIBLE);
+        // Show the Progress Bar loading while the movie data is being fetched from the server
+        mMainActivityView.showProgress(true);
     }
 
     @Override
@@ -76,7 +81,8 @@ public class FetchMoviesTask extends AsyncTask<String, Void, List<Movies>> {
     @Override
     protected void onPostExecute(List<Movies> movies) {
 
-        //mProgressBar.setVisibility(View.INVISIBLE);
+        // Hide the Progress Bar when the movies ar already shown
+        mMainActivityView.showProgress(false);
 
         if (movies != null) {
             mAdapter.setMovieData(movies);

@@ -71,17 +71,6 @@ public class MovieDetailActivityFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(mToolbar);
 
-        /*if (activity != null) {
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }*/
-
-        /*((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
-        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }*/
-
         ButterKnife.bind(this, rootView);
 
         Intent receiveIntent = getActivity().getIntent();
