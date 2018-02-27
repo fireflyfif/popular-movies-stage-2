@@ -1,13 +1,7 @@
 package com.example.android.popular_movies_stage_1.utilities;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
-import com.example.android.popular_movies_stage_1.BuildConfig;
-import com.example.android.popular_movies_stage_1.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +22,8 @@ public final class NetworkUtils {
     private static final String IMAGES_BASE_URL = "https://image.tmdb.org/t/p/";
 
     private static final String FILE_SIZE = "w342";
+
+    private static final String FILE_SIZE_BIGGER = "w500";
 
     private static final String MOVIES_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -72,7 +68,7 @@ public final class NetworkUtils {
     }
 
     public static String buildPosterBackdropUrl(String backdropPath) {
-        String backdropUrlString = IMAGES_BASE_URL + FILE_SIZE + backdropPath;
+        String backdropUrlString = IMAGES_BASE_URL + FILE_SIZE_BIGGER + backdropPath;
         Log.v(TAG, "Built URI for Backdrop: " + backdropUrlString);
 
         return backdropUrlString;

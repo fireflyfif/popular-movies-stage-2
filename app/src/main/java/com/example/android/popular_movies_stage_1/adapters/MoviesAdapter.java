@@ -26,18 +26,28 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     private Context mContext;
     private List<Movies> mMoviesList;
 
-    private static final String MOVIE_DETAILS_KEY = "movie_parcel";
+    final private MovieAdapterOnClickHandler mClickHandler;
+
+    /**
+     * The interface that receives onClick messages
+     */
+    public interface MovieAdapterOnClickHandler {
+        void onClick(Movies movies);
+    }
 
 
     /**
      * Constructor for MoviesAdapter
      *
-     * @param context  Get the context of the activity
-     * @param movies   List of movies
+     * @param context      Get the context of the activity
+     * @param movies       List of movies
+     * @param clickHandler The on-click handler for this adapter. This single handler is called
+     *                     when an item is clicked.
      */
-    public MoviesAdapter(Context context, List<Movies> movies) {
+    public MoviesAdapter(Context context, List<Movies> movies, MovieAdapterOnClickHandler clickHandler) {
         mContext = context;
         mMoviesList = movies;
+        mClickHandler = clickHandler;
     }
 
 
@@ -55,10 +65,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
 
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(view.getContext(), DetailActivity.class);
             Movies currentMovie = mMoviesList.get(getAdapterPosition());
-            intent.putExtra(MOVIE_DETAILS_KEY, currentMovie);
-            mContext.startActivity(intent);
+            mClickHandler.onClick(currentMovie);
         }
     }
 

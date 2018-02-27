@@ -1,6 +1,7 @@
 package com.example.android.popular_movies_stage_1.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -38,7 +39,8 @@ import butterknife.ButterKnife;
  */
 
 public class MainActivityFragment extends Fragment implements
-        SharedPreferences.OnSharedPreferenceChangeListener, MainActivityView {
+        SharedPreferences.OnSharedPreferenceChangeListener, MainActivityView,
+        MoviesAdapter.MovieAdapterOnClickHandler {
 
 
     private static final String LOG_TAG = "MainActivityFragment";
@@ -46,6 +48,9 @@ public class MainActivityFragment extends Fragment implements
     private static final String SAVE_STATE_KEY = "save_state";
 
     private static final String RECYCLER_VIEW_STATE = "list_state";
+
+    private static final String MOVIE_DETAILS_KEY = "movie_parcel";
+
     @BindView(R.id.recycler_grid_view)
     RecyclerView mRecyclerGridView;
     @BindView(R.id.loading_indicator)
@@ -106,7 +111,7 @@ public class MainActivityFragment extends Fragment implements
 
         mRecyclerGridView.setLayoutManager(gridLayoutManager);
         mRecyclerGridView.setHasFixedSize(true);
-        mMoviesAdapter = new MoviesAdapter(getActivity(), mMoviesList);
+        mMoviesAdapter = new MoviesAdapter(getActivity(), mMoviesList, this);
 
         mRecyclerGridView.setAdapter(mMoviesAdapter);
 
@@ -240,5 +245,20 @@ public class MainActivityFragment extends Fragment implements
         } else {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
         }
+    }
+
+
+    /**
+     * Method that handles responses to clicks from the grid of movie posters
+     *
+     * @param movies Creates an object of Movies
+     */
+    @Override
+    public void onClick(Movies movies) {
+        //Movies currentMovie = movies;
+        Intent intent = new Intent(getContext(), DetailActivity.class);
+        //Movies currentMovie = mMoviesList.get();
+        intent.putExtra(MOVIE_DETAILS_KEY, movies);
+        getContext().startActivity(intent);
     }
 }
