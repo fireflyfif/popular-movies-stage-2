@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/movies_settings_fragment"
-    android:name="com.example.android.popular_movies_stage_1.ui.SettingsFragment"
+    android:name="com.example.android.popularmovies.ui.SettingsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.popular_movies_stage_1.ui.SettingsActivity">
+    tools:context="com.example.android.popularmovies.ui.SettingsActivity">
 
 </fragment>

@@ -1,10 +1,10 @@
-package com.example.android.popular_movies_stage_1.ui;
+package com.example.android.popularmovies.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.example.android.popular_movies_stage_1.R;
+import com.example.android.popularmovies.R;
 
 public class SettingsActivity extends AppCompatActivity {
 

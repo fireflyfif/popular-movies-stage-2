@@ -1,13 +1,11 @@
-package com.example.android.popular_movies_stage_1.utilities;
+package com.example.android.popularmovies.utilities;
 
 import android.os.AsyncTask;
-import android.view.View;
-import android.widget.ProgressBar;
 
-import com.example.android.popular_movies_stage_1.BuildConfig;
-import com.example.android.popular_movies_stage_1.models.Movies;
-import com.example.android.popular_movies_stage_1.ui.MainActivityFragment;
-import com.example.android.popular_movies_stage_1.adapters.MoviesAdapter;
+import com.example.android.popularmovies.BuildConfig;
+import com.example.android.popularmovies.models.Movies;
+import com.example.android.popularmovies.ui.MainActivityFragment;
+import com.example.android.popularmovies.adapters.MoviesAdapter;
 
 import java.lang.ref.WeakReference;
 import java.net.URL;

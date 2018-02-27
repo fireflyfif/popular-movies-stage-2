@@ -1,9 +1,9 @@
-package com.example.android.popular_movies_stage_1.utilities;
+package com.example.android.popularmovies.utilities;
 
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.example.android.popular_movies_stage_1.models.Movies;
+import com.example.android.popularmovies.models.Movies;
 
 import org.json.JSONArray;
 import org.json.JSONException;

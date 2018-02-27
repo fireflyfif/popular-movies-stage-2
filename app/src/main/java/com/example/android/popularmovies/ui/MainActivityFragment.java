@@ -1,4 +1,4 @@
-package com.example.android.popular_movies_stage_1.ui;
+package com.example.android.popularmovies.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,11 +22,11 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.android.popular_movies_stage_1.R;
-import com.example.android.popular_movies_stage_1.adapters.MoviesAdapter;
-import com.example.android.popular_movies_stage_1.models.Movies;
-import com.example.android.popular_movies_stage_1.utilities.FetchMoviesTask;
-import com.example.android.popular_movies_stage_1.utilities.FetchMoviesTask.MainActivityView;
+import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.adapters.MoviesAdapter;
+import com.example.android.popularmovies.models.Movies;
+import com.example.android.popularmovies.utilities.FetchMoviesTask;
+import com.example.android.popularmovies.utilities.FetchMoviesTask.MainActivityView;
 
 import java.util.ArrayList;
 

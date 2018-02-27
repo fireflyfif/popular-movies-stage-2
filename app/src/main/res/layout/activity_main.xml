@@ -3,6 +3,6 @@
     android:id="@+id/main_grid_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.example.android.popular_movies_stage_1.ui.MainActivityFragment">
+    android:name="com.example.android.popularmovies.ui.MainActivityFragment">
 
 </fragment>

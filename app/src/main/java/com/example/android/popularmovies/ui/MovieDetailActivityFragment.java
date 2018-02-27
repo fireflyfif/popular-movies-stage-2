@@ -1,4 +1,4 @@
-package com.example.android.popular_movies_stage_1.ui;
+package com.example.android.popularmovies.ui;
 
 
 import android.content.Intent;
@@ -12,9 +12,9 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.example.android.popular_movies_stage_1.R;
-import com.example.android.popular_movies_stage_1.models.Movies;
-import com.example.android.popular_movies_stage_1.utilities.NetworkUtils;
+import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.models.Movies;
+import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;

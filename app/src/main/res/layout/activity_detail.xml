@@ -51,11 +51,11 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="com.example.android.popular_movies_stage_1.ui.DetailActivity">
+        tools:context="com.example.android.popularmovies.ui.DetailActivity">
 
         <!--<fragment
             android:id="@+id/fragment_detail"
-            android:name="com.example.android.popular_movies_stage_1.ui.MovieDetailActivityFragment"
+            android:napopularmoviesovieDetailActivityFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />-->
 

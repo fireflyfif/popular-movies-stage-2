@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.android.popular_movies_stage_1.ui.MovieDetailActivityFragment">
+    tools:context="com.example.android.popularmovies.ui.MovieDetailActivityFragment">
 
     <ImageView
         android:id="@+id/movie_poster_detail"
