@@ -4,10 +4,7 @@ package com.example.android.popular_movies_stage_1.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,8 +30,8 @@ public class MovieDetailActivityFragment extends Fragment {
     private static final String MOVIE_DETAILS_KEY = "movie_parcel";
     @BindView(R.id.movie_poster_detail)
     ImageView mMoviePoster;
-    @BindView(R.id.movie_backdrop_image)
-    ImageView mMovieBackdropImage;
+    /*@BindView(R.id.movie_backdrop_image)
+    ImageView mMovieBackdropImage;*/
     @BindView(R.id.movie_original_title)
     TextView mMovieOriginalTitle;
     @BindView(R.id.movie_synopsis)
@@ -45,10 +42,7 @@ public class MovieDetailActivityFragment extends Fragment {
     TextView mMovieRatingValue;
     @BindView(R.id.rating_bar)
     RatingBar mMovieRatingBar;
-    @BindView(R.id.collapsing_toolbar)
-    CollapsingToolbarLayout collapsingToolbarLayout;
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
+
 
     /**
      * Mandatory empty constructor for the fragment manager
@@ -68,9 +62,6 @@ public class MovieDetailActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_activity_detail_movie, container, false);
 
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(mToolbar);
-
         ButterKnife.bind(this, rootView);
 
         Intent receiveIntent = getActivity().getIntent();
@@ -86,6 +77,7 @@ public class MovieDetailActivityFragment extends Fragment {
         return rootView;
     }
 
+
     /**
      * Method that populates all UI views with the current movie
      *
@@ -97,7 +89,7 @@ public class MovieDetailActivityFragment extends Fragment {
         getActivity().setTitle(movies.getMovieTitle());
 
         // Set title to the current Movie
-        collapsingToolbarLayout.setTitle(movies.getMovieTitle());
+        //collapsingToolbarLayout.setTitle(movies.getMovieTitle());
 
         // Set original to the current Movie
         mMovieOriginalTitle.setText(movies.getMovieOriginalTitle());
@@ -108,11 +100,11 @@ public class MovieDetailActivityFragment extends Fragment {
                 .placeholder(R.drawable.movie_poster)
                 .into(mMoviePoster);
 
-        // Display the second poster image background
+        /*// Display the second poster image background
         Picasso.with(mMovieBackdropImage.getContext())
                 .load(NetworkUtils.buildPosterBackdropUrl(movies.getMovieBackdrop()))
                 .placeholder(R.drawable.movie_poster)
-                .into(mMovieBackdropImage);
+                .into(mMovieBackdropImage);*/
 
         // Set synopsis to the current Movie
         mMovieSynopsis.setText(movies.getPlotSynopsis());
