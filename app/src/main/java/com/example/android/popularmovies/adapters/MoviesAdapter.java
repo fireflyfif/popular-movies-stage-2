@@ -121,16 +121,23 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     }
 
     public Cursor swapCursor(Cursor cursor) {
-//        if (mCursor == cursor) {
-//            return null;
-//        }
+        // Check if this cursor is the same as the previous cursor (mCursor)
+        if (mCursor == cursor) {
+            // If it's the same, nothing has changed
+            return null;
+        }
 
+        // Assign new value to the old cursor, the same as:
+        // mCursor = cursor
         Cursor temp = mCursor;
         this.mCursor = cursor;
 
+        // Check if this is a valid cursor, then update the cursor
         if (cursor != null) {
             this.notifyDataSetChanged();
         }
+
+        // Return the new cursor
         return temp;
     }
 }

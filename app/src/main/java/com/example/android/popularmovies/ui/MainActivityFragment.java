@@ -360,9 +360,11 @@ public class MainActivityFragment extends Fragment implements
                     cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_SYNOPSIS))
             ));
         }
+        // No need to closing the cursor since the cursor is from a CursorLoader,
+        // instead call swapCursor()
         //cursor.close();
 
-        mMoviesAdapter.swapCursor(mFavMoviesData);
+        mMoviesAdapter.swapCursor(cursor);
     }
 
     @Override
