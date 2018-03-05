@@ -34,6 +34,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.android.popularmovies.ui.MainActivity" />
         </activity>
+
+        <!-- Register the Movie Content Provider -->
+        <provider
+            android:authorities="com.example.android.popularmovies"
+            android:name="com.example.android.popularmovies.data.MovieProvider"
+            android:exported="false" />
+
     </application>
 
 </manifest>

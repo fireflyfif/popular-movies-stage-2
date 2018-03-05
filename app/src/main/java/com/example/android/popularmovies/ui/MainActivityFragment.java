@@ -1,8 +1,12 @@
 package com.example.android.popularmovies.ui;
 
+import android.support.v4.app.LoaderManager;
 import android.content.Context;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -24,11 +28,14 @@ import android.widget.TextView;
 
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapters.MoviesAdapter;
+import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.data.MovieContract.FavMovieEntry;
 import com.example.android.popularmovies.models.Movies;
 import com.example.android.popularmovies.utilities.FetchMoviesTask;
 import com.example.android.popularmovies.utilities.FetchMoviesTask.MainActivityView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +47,7 @@ import butterknife.ButterKnife;
 
 public class MainActivityFragment extends Fragment implements
         SharedPreferences.OnSharedPreferenceChangeListener, MainActivityView,
-        MoviesAdapter.MovieAdapterOnClickHandler {
+        MoviesAdapter.MovieAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Cursor> {
 
 
     private static final String LOG_TAG = "MainActivityFragment";
@@ -50,6 +57,8 @@ public class MainActivityFragment extends Fragment implements
     private static final String RECYCLER_VIEW_STATE = "list_state";
 
     private static final String MOVIE_DETAILS_KEY = "movie_parcel";
+
+    private static final int ID_FAV_MOVIES_LOADER = 1;
 
     @BindView(R.id.recycler_grid_view)
     RecyclerView mRecyclerGridView;
@@ -62,6 +71,10 @@ public class MainActivityFragment extends Fragment implements
     // Declare the movie list as an ArrayList,
     // because Parcelable saves state of ArrayList, but not ListView
     private ArrayList<Movies> mMoviesList;
+
+    private List<Movies> favMovies;
+
+    private Cursor mFavMoviesData;
 
 
     // Mandatory empty constructor
@@ -111,9 +124,9 @@ public class MainActivityFragment extends Fragment implements
 
         mRecyclerGridView.setLayoutManager(gridLayoutManager);
         mRecyclerGridView.setHasFixedSize(true);
-        mMoviesAdapter = new MoviesAdapter(getActivity(), mMoviesList, this);
 
-        mRecyclerGridView.setAdapter(mMoviesAdapter);
+//        mMoviesAdapter = new MoviesAdapter(getActivity(), mMoviesList, this);
+//        mRecyclerGridView.setAdapter(mMoviesAdapter);
 
         // Call onRestoreInstanceState when the data has been reattached to the mRecyclerGridView
         mRecyclerGridView.getLayoutManager().onRestoreInstanceState(savedRecyclerViewState);
@@ -129,6 +142,7 @@ public class MainActivityFragment extends Fragment implements
             Log.v(LOG_TAG, "There is NO internet connection");
             showErrorMessage();
         }
+
         return rootView;
     }
 
@@ -174,26 +188,54 @@ public class MainActivityFragment extends Fragment implements
         mErrorMessage.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.v(LOG_TAG, "onPause is called!" );
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.v(LOG_TAG, "onStop is called!" );
+    }
+
     /**
      * Method for loading movies using user's preference sort order
      * for fetching movies asynchronously
      */
     private void loadMoviesFromPreferences() {
-        // There is something fishy here
+
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(getActivity());
-
-        // Execute the network call on a separate background thread
-        FetchMoviesTask task = new FetchMoviesTask(mMoviesAdapter, this, this);
 
         // Update the recycler view with the user's preferences.
         String sortOrderKey = getString(R.string.pref_sort_by_key);
         String sortOrderDefault = getString(R.string.pref_sort_by_popular);
         String sortOrder = sharedPreferences.getString(sortOrderKey, sortOrderDefault);
 
-        // Execute fetching the movie data from a background thread
-        // sortOrder loads the movie data with the default "popular" sorting setting
-        task.execute(sortOrder);
+        if (sortOrder.equals(getString(R.string.pref_sort_by_favorites))) {
+            // Load data from the database
+            Log.v(LOG_TAG, "The user selected Favorites: " + sortOrder);
+
+            mMoviesAdapter = new MoviesAdapter(getActivity(), favMovies, this);
+            mRecyclerGridView.setAdapter(mMoviesAdapter);
+
+            getActivity().getSupportLoaderManager().initLoader(ID_FAV_MOVIES_LOADER, null, this);
+        } else {
+
+            Log.v(LOG_TAG, "The user selected " + sortOrder);
+
+            mMoviesAdapter = new MoviesAdapter(getActivity(), mMoviesList, this);
+            mRecyclerGridView.setAdapter(mMoviesAdapter);
+            // Execute the network call on a separate background thread
+            FetchMoviesTask task = new FetchMoviesTask(mMoviesAdapter, this, this);
+
+            // Execute fetching the movie data from a background thread
+            // sortOrder loads the movie data with the default "popular" sorting setting
+            task.execute(sortOrder);
+        }
+
     }
 
 
@@ -260,5 +302,74 @@ public class MainActivityFragment extends Fragment implements
         //Movies currentMovie = mMoviesList.get();
         intent.putExtra(MOVIE_DETAILS_KEY, movies);
         getContext().startActivity(intent);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+
+        switch (id) {
+
+            case ID_FAV_MOVIES_LOADER:
+
+                // Define a projection that specifies the columns from the movies table
+                String[] projection = {
+                        FavMovieEntry.COLUMN_MOVIE_ID,
+                        FavMovieEntry.COLUMN_MOVIE_TITLE,
+                        FavMovieEntry.COLUMN_MOVIE_ORIGINAL_TITLE,
+                        FavMovieEntry.COLUMN_POSTER_PATH,
+                        FavMovieEntry.COLUMN_BACKDROP_PATH,
+                        FavMovieEntry.COLUMN_MOVIE_RATING,
+                        FavMovieEntry.COLUMN_MOVIE_RELEASE_DATE,
+                        FavMovieEntry.COLUMN_MOVIE_SYNOPSIS
+                };
+
+                // Execute the ContentProvider's query method on a background thread
+                return new CursorLoader(getContext(),
+                        FavMovieEntry.CONTENT_URI,
+                        projection,
+                        null,
+                        null,
+                        null);
+
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + id);
+        }
+
+    }
+
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+        Log.d(LOG_TAG, "onLoadFinished is called");
+
+        favMovies = new ArrayList<>();
+
+        // Not sure about that
+        mFavMoviesData = cursor;
+
+        // Loop through each row in the Cursor and add a new Movies
+        while (cursor.moveToNext()) {
+            favMovies.add(new Movies(cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_ID)),
+                    cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_TITLE)),
+                    cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_ORIGINAL_TITLE)),
+                    cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_RELEASE_DATE)),
+                    cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_POSTER_PATH)),
+                    cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_BACKDROP_PATH)),
+                    cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_RATING)),
+                    cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_SYNOPSIS))
+            ));
+        }
+        //cursor.close();
+
+        mMoviesAdapter.swapCursor(mFavMoviesData);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        Log.d(LOG_TAG, "onLoadReset is called");
+
+        mMoviesAdapter.swapCursor(null);
+
     }
 }

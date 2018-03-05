@@ -3,6 +3,8 @@ package com.example.android.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.android.popularmovies.data.MovieContract;
+
 /**
  * Created by fifiv on 01/02/2018.
  */
@@ -50,6 +52,8 @@ public class Movies implements Parcelable {
      */
     private String mPlotSynopsis;
 
+    private String mRating;
+
     /**
      * Create new Movies object
      *
@@ -71,6 +75,20 @@ public class Movies implements Parcelable {
         mMoviePoster = moviePoster;
         mMovieBackdrop = movieBackdrop;
         mVoteAverage = voteAverage;
+        mPlotSynopsis = plotSynopsis;
+    }
+
+    // Constructor that is used for the Database
+    public Movies(String movieId, String movieTitle, String movieOriginalTitle, String releaseDate,
+                  String moviePoster, String movieBackdrop, String voteAverage, String plotSynopsis) {
+
+        mMovieId = movieId;
+        mMovieTitle = movieTitle;
+        mMovieOriginalTitle = movieOriginalTitle;
+        mReleaseDate = releaseDate;
+        mMoviePoster = moviePoster;
+        mMovieBackdrop = movieBackdrop;
+        mRating = voteAverage;
         mPlotSynopsis = plotSynopsis;
     }
 

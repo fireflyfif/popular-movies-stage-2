@@ -1,12 +1,15 @@
 package com.example.android.popularmovies.adapters;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.models.Movies;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.utilities.NetworkUtils;
@@ -14,12 +17,18 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 /**
  * Created by fifiv on 31/01/2018.
  */
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder> {
+
+    // Class variable for the Cursor that holds task data
+    private Cursor mCursor;
 
     private Context mContext;
     private List<Movies> mMoviesList;
@@ -57,8 +66,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
         public MoviesAdapterViewHolder(View itemView) {
             super(itemView);
 
-            moviePosterThumbnail = itemView.findViewById(R.id.movie_image);
+            ButterKnife.bind(this, itemView);
+
             itemView.setOnClickListener(this);
+
+            moviePosterThumbnail = itemView.findViewById(R.id.movie_image);
         }
 
         @Override
@@ -106,5 +118,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     public void setMovieData(List<Movies> movieData) {
         mMoviesList = movieData;
         notifyDataSetChanged();
+    }
+
+    public Cursor swapCursor(Cursor cursor) {
+//        if (mCursor == cursor) {
+//            return null;
+//        }
+
+        Cursor temp = mCursor;
+        this.mCursor = cursor;
+
+        if (cursor != null) {
+            this.notifyDataSetChanged();
+        }
+        return temp;
     }
 }

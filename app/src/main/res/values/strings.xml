@@ -13,11 +13,17 @@
     <!--  Label for Top Rated -->
     <string name="pref_sort_by_top_rated_label">Top Rated</string>
 
+    <!--  Label for Favorites -->
+    <string name="pref_sort_by_favorites_label">My Favorites</string>
+
     <!-- Value in SharedPreferences for sorting the movies -->
     <string name="pref_sort_by_popular" translatable="false">popular</string>
 
     <!-- Value in SharedPreferences for sorting the movies -->
     <string name="pref_sort_by_top_rated" translatable="false">top_rated</string>
+
+    <!-- Value in SharedPreferences for sorting the movies -->
+    <string name="pref_sort_by_favorites" translatable="false">favorites</string>
 
     <!--  Key name for sorting the movies preference in SharedPreferences -->
     <string name="pref_sort_by_key" translatable="false">sort_by</string>
