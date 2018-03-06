@@ -111,12 +111,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     }
 
     /**
-     * This method is used to set the movies data on a MoviesAdapter it there is one.
+     * This method is used to set the movies data on a MoviesAdapter if there is one.
      *
      * @param movieData The new movie data to be displayed
      */
     public void setMovieData(List<Movies> movieData) {
         mMoviesList = movieData;
+
         notifyDataSetChanged();
     }
 
