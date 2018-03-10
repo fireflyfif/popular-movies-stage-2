@@ -3,9 +3,11 @@ package com.example.android.popularmovies.ui;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,11 +28,18 @@ import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private static final String IMAGES_BASE_URL = "https://image.tmdb.org/t/p/";
+    private static final String FILE_SIZE_BIGGER = "w500";
+
     private static final String MOVIE_DETAILS_KEY = "movie_parcel";
 
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     public static Movies sMovie;
+
+    private boolean isAdded = false;
+
+    private Uri mCurrentMovieUri;
 
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -66,14 +75,26 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
 
+        isAdded = false;
+
         mFabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addToFavorites();
-                Toast.makeText(DetailActivity.this, "Added to your favorites",
-                        Toast.LENGTH_SHORT).show();
+
+                if (!isAddedToFavorites()) {
+                    addToFavorites();
+                    Toast.makeText(DetailActivity.this, "Added to favorites",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    // Delete from the database
+                    removeFromFavorites();
+                    Toast.makeText(DetailActivity.this, "Removed from favorites",
+                            Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
+
     }
 
     /**
@@ -85,9 +106,11 @@ public class DetailActivity extends AppCompatActivity {
         // Set title to the current Movie
         collapsingToolbarLayout.setTitle(movies.getMovieTitle());
 
+        String backdropUrlString = IMAGES_BASE_URL + FILE_SIZE_BIGGER;
+
         // Display the second poster image background
         Picasso.with(mMovieBackdropImage.getContext())
-                .load(NetworkUtils.buildPosterBackdropUrl(movies.getMovieBackdrop()))
+                .load(backdropUrlString + movies.getMovieBackdrop())
                 .placeholder(R.drawable.movie_poster)
                 .into(mMovieBackdropImage);
     }
@@ -121,5 +144,28 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         //finish();
+    }
+
+    public void removeFromFavorites() {
+
+        if (mCurrentMovieUri == null) {
+            int rowsDeleted = getContentResolver().delete(
+                    mCurrentMovieUri,
+                    null,
+                    null);
+
+        }
+
+    }
+
+    private boolean isAddedToFavorites() {
+
+        if (isAdded) {
+            mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_done));
+        } else {
+            mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add));
+        }
+
+        return isAdded;
     }
 }

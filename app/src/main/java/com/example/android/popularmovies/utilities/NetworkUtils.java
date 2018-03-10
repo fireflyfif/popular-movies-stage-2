@@ -1,5 +1,8 @@
 package com.example.android.popularmovies.utilities;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -25,12 +28,31 @@ public final class NetworkUtils {
 
     private static final String FILE_SIZE_BIGGER = "w500";
 
-    private static final String MOVIES_BASE_URL = "https://api.themoviedb.org/3";
+    public static final String MOVIES_BASE_URL = "https://api.themoviedb.org/3/";
 
     private static final String MOVIE_PATH = "movie";
 
     private static final String API_KEY_PARAM = "api_key";
 
+
+    /**
+     * Check for Network Connection
+     */
+    public static boolean haveNetworkConnection(Context context) {
+
+        // Get reference to the ConnectivityManager to check for network connectivity
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        boolean haveNetConnection = false;
+        // Get details on the currently active default data network
+        if (networkInfo != null && networkInfo.isConnected()) {
+            haveNetConnection = true;
+        }
+        return haveNetConnection;
+    }
 
     /**
      * Retrieves the proper URL to query for the movie data.

@@ -96,9 +96,9 @@ public class TheMovieDbJsonUtils {
                         "original title: " + movieOriginalTitle + "user rating: " + userRating +
                         "release date: " + releaseDate);
 
-                Movies movies = new Movies(movieId, movieTitle, movieOriginalTitle, releaseDate,
-                        posterPath, movieBackdropPath, userRating, plotSynopsis);
-                moviesList.add(movies);
+//                Movies movies = new Movies(movieId, movieTitle, movieOriginalTitle, releaseDate,
+//                        posterPath, movieBackdropPath, userRating, plotSynopsis);
+//                moviesList.add(movies);
             }
 
         } catch (JSONException e) {

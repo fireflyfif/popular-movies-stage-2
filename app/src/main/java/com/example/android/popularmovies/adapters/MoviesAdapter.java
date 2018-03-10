@@ -4,12 +4,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.models.MovieDbResponse;
 import com.example.android.popularmovies.models.Movies;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.utilities.NetworkUtils;
@@ -27,11 +29,15 @@ import butterknife.ButterKnife;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder> {
 
+    private static final String IMAGES_BASE_URL = "https://image.tmdb.org/t/p/";
+    private static final String FILE_SIZE = "w342";
+
     // Class variable for the Cursor that holds task data
     private Cursor mCursor;
 
     private Context mContext;
     private List<Movies> mMoviesList;
+    //private MovieDbResponse mMovieDbResponse;
 
     final private MovieAdapterOnClickHandler mClickHandler;
 
@@ -93,11 +99,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     @Override
     public void onBindViewHolder(MoviesAdapterViewHolder holder, int position) {
 
-        Movies moviePoster = mMoviesList.get(position);
-        String moviePosterPath = moviePoster.getPoster();
+        Movies currentMovie = mMoviesList.get(position);
+        String moviePosterPath = currentMovie.getPoster();
+
+        String posterPathUrlString = IMAGES_BASE_URL + FILE_SIZE + moviePosterPath;
+        Log.d("MainActivity", "Poster Url: " + posterPathUrlString);
 
         Picasso.with(mContext)
-                .load(NetworkUtils.buildPosterPathUrl(moviePosterPath))
+                .load(posterPathUrlString)
                 .placeholder(R.drawable.movie_poster)
                 .into(holder.moviePosterThumbnail);
     }

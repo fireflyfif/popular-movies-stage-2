@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,9 @@ import butterknife.ButterKnife;
  */
 
 public class MovieDetailActivityFragment extends Fragment {
+
+    private static final String IMAGES_BASE_URL = "https://image.tmdb.org/t/p/";
+    private static final String FILE_SIZE = "w342";
 
     private static final String LOG_TAG = MovieDetailActivityFragment.class.getSimpleName();
     private static final String MOVIE_DETAILS_KEY = "movie_parcel";
@@ -94,9 +98,12 @@ public class MovieDetailActivityFragment extends Fragment {
         // Set original to the current Movie
         mMovieOriginalTitle.setText(movies.getMovieOriginalTitle());
 
+        String posterPathUrlString = IMAGES_BASE_URL + FILE_SIZE;
+        Log.d(LOG_TAG, "Poster Url: " + posterPathUrlString);
+
         // Display the poster image
         Picasso.with(mMoviePoster.getContext())
-                .load(NetworkUtils.buildPosterPathUrl(movies.getPoster()))
+                .load(posterPathUrlString + movies.getPoster())
                 .placeholder(R.drawable.movie_poster)
                 .into(mMoviePoster);
 

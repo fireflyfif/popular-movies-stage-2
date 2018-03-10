@@ -3,7 +3,12 @@ package com.example.android.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.android.popularmovies.data.MovieContract;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 
 /**
  * Created by fifiv on 01/02/2018.
@@ -22,63 +27,94 @@ public class Movies implements Parcelable {
             return new Movies[size];
         }
     };
+
+    /**
+     * Movie ID
+     */
+    @SerializedName("id")
+    @Expose
     private String mMovieId;
+
     /**
      * Movie Title
      */
+    @SerializedName("title")
+    @Expose
     private String mMovieTitle;
+
     /**
-     * Movie Title
+     * Movie Original Title
      */
+    @SerializedName("original_title")
+    @Expose
     private String mMovieOriginalTitle;
+
     /**
      * Movie Release date
      */
+    @SerializedName("release_date")
+    @Expose
     private String mReleaseDate;
+
     /**
      * Movie Poster
      */
+    @SerializedName("poster_path")
+    @Expose
     private String mMoviePoster;
+
     /**
      * Movie Second Image Poster
      */
+    @SerializedName("backdrop_path")
+    @Expose
     private String mMovieBackdrop;
+
     /**
      * Vote Average
      */
+    @SerializedName("vote_average")
+    @Expose
     private double mVoteAverage;
+
     /**
      * Plot Synopsis
      */
+    @SerializedName("overview")
+    @Expose
     private String mPlotSynopsis;
+
+    /**
+     * Genre IDs
+     */
+    @SerializedName("genre_ids")
+    @Expose
+    private int[] mMovieGenreIds;
+
+    // The List with Genre names and Ids is taken from the The Movie DB API:
+    // http://api.themoviedb.org/3/genre/movie/list?api_key=####
+    private static final String[] GENRE_NAMES = new String[]{
+            "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary",
+            "Drama", "Family", "Fantasy", "History", "Horror", "Music", "Mystery",
+            "Romance", "Science Fiction", "TV Movie", "Thriller", "War", "Western"
+    };
+
+    private static final List<Integer> GENRE_IDS = Arrays.asList(
+            28, 12, 16, 35, 80, 99, 18, 10751, 14, 36, 27, 10402, 9648,
+            10749, 878, 10770, 53, 10752, 37
+    );
 
     private String mRating;
 
     /**
-     * Create new Movies object
+     * Create empty Movies constructor
      *
-     * @param movieId       is the Id of the movie
-     * @param movieTitle    is the title of the movie
-     * @param releaseDate   is the release date of the movie
-     * @param moviePoster   is the poster of the movie
-     * @param movieBackdrop is the second movie image of the movie
-     * @param voteAverage   is the average vote for the movie
-     * @param plotSynopsis  is the description of the movie
      */
-    public Movies(String movieId, String movieTitle, String movieOriginalTitle, String releaseDate,
-                  String moviePoster, String movieBackdrop, double voteAverage, String plotSynopsis) {
-
-        mMovieId = movieId;
-        mMovieTitle = movieTitle;
-        mMovieOriginalTitle = movieOriginalTitle;
-        mReleaseDate = releaseDate;
-        mMoviePoster = moviePoster;
-        mMovieBackdrop = movieBackdrop;
-        mVoteAverage = voteAverage;
-        mPlotSynopsis = plotSynopsis;
+    public Movies() {
     }
 
     // Constructor that is used for the Database
+    // TODO: Add the Genres
     public Movies(String movieId, String movieTitle, String movieOriginalTitle, String releaseDate,
                   String moviePoster, String movieBackdrop, String voteAverage, String plotSynopsis) {
 
@@ -101,6 +137,7 @@ public class Movies implements Parcelable {
         mMovieBackdrop = in.readString();
         mVoteAverage = in.readDouble();
         mPlotSynopsis = in.readString();
+        //mMovieGenreIds = in.createIntArray();
     }
 
     /**
@@ -159,6 +196,26 @@ public class Movies implements Parcelable {
         return mPlotSynopsis;
     }
 
+    /**
+     * Get the List with Genres for a single Movie
+     */
+    public int[] getGenreIds() {
+        return mMovieGenreIds;
+    }
+
+    // May not needed
+    public void setGenreIds(int[] genreIds) {
+        mMovieGenreIds = genreIds;
+    }
+
+    public String getMovieGenres(int[] genreIds) {
+        List<String> genres = new ArrayList<>();
+
+        String movieGenereString;
+
+        return null;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -174,5 +231,6 @@ public class Movies implements Parcelable {
         parcel.writeString(mMovieBackdrop);
         parcel.writeDouble(mVoteAverage);
         parcel.writeString(mPlotSynopsis);
+        //parcel.writeIntArray(mMovieGenreIds);
     }
 }

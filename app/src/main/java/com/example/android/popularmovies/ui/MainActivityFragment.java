@@ -1,5 +1,6 @@
 package com.example.android.popularmovies.ui;
 
+import android.net.sip.SipAudioCall;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.support.v4.content.CursorLoader;
@@ -24,21 +25,31 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.BuildConfig;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapters.MoviesAdapter;
 import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.data.MovieContract.FavMovieEntry;
+import com.example.android.popularmovies.models.MovieDbResponse;
 import com.example.android.popularmovies.models.Movies;
 import com.example.android.popularmovies.utilities.FetchMoviesTask;
 import com.example.android.popularmovies.utilities.FetchMoviesTask.MainActivityView;
+import com.example.android.popularmovies.utilities.MovieDbApiClient;
+import com.example.android.popularmovies.utilities.MovieDbInterface;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.HttpUrl;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.http.Url;
 
 
 /**
@@ -46,13 +57,14 @@ import butterknife.ButterKnife;
  */
 
 public class MainActivityFragment extends Fragment implements
-        SharedPreferences.OnSharedPreferenceChangeListener, MainActivityView,
+        SharedPreferences.OnSharedPreferenceChangeListener,
         MoviesAdapter.MovieAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Cursor> {
 
 
     private static final String LOG_TAG = "MainActivityFragment";
 
-    private static final String SAVE_STATE_KEY = "save_state";
+    private static final String SAVE_STATE_MOVIE_KEY = "save_state_movie";
+    private static final String SAVE_STATE_FAV_KEY = "save_state_fav";
 
     private static final String RECYCLER_VIEW_STATE = "list_state";
 
@@ -66,45 +78,54 @@ public class MainActivityFragment extends Fragment implements
     ProgressBar mLoadingIndicator;
     @BindView(R.id.error_message_display)
     TextView mErrorMessage;
-    private Parcelable savedRecyclerViewState;
+
     private MoviesAdapter mMoviesAdapter;
+
+    private List<Movies> mMoviesList;
+
     // Declare the movie list as an ArrayList,
     // because Parcelable saves state of ArrayList, but not ListView
-    private ArrayList<Movies> mMoviesList;
-
-    private List<Movies> favMovies;
+    private ArrayList<Movies> mFavMovies;
 
     private Cursor mFavMoviesData;
+
+    private Movies mMovies;
 
 
     // Mandatory empty constructor
     public MainActivityFragment() {
     }
 
-    @Override
+ /*   @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
         Log.v(LOG_TAG, "onViewStateRestored called Now!");
         if (savedInstanceState != null) {
-            savedRecyclerViewState = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE);
-            mRecyclerGridView.getLayoutManager().onRestoreInstanceState(savedRecyclerViewState);
+            mMovies = savedInstanceState.getParcelable(SAVE_STATE_MOVIE_KEY);
+            mFavMovies = savedInstanceState.getParcelableArrayList(SAVE_STATE_FAV_KEY);
+//            savedRecyclerViewState = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE);
+//            mRecyclerGridView.getLayoutManager().onRestoreInstanceState(savedRecyclerViewState);
         }
-    }
+    }*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //((AppCompatActivity)getActivity()).setSupportActionBar(mToolbarMain);
 
         Log.v(LOG_TAG, "onCreate called Now!");
 
-        if (savedInstanceState == null || !savedInstanceState.containsKey(SAVE_STATE_KEY)) {
-            mMoviesList = new ArrayList<>();
+        if (savedInstanceState == null || !savedInstanceState.containsKey(SAVE_STATE_MOVIE_KEY)
+                || !savedInstanceState.containsKey(SAVE_STATE_FAV_KEY)) {
+            mMovies = new Movies();
+            mFavMovies = new ArrayList<>();
         } else {
-            mMoviesList = savedInstanceState.getParcelableArrayList(SAVE_STATE_KEY);
-            savedRecyclerViewState = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE);
+            mMovies = savedInstanceState.getParcelable(SAVE_STATE_MOVIE_KEY);
+            mFavMovies = savedInstanceState.getParcelableArrayList(SAVE_STATE_FAV_KEY);
         }
+
+//        mMoviesAdapter = new MoviesAdapter(getActivity(), mMoviesList,
+//                MainActivityFragment.this);
     }
 
     @Override
@@ -116,7 +137,8 @@ public class MainActivityFragment extends Fragment implements
         ButterKnife.bind(this, rootView);
 
         mMoviesList = new ArrayList<>();
-        favMovies = new ArrayList<>();
+        mFavMovies = new ArrayList<>();
+
 
         // Create new instance of GridLayoutManager and set the second argument -
         // columnSpan to have 2 for vertical and 3 for landscape mode
@@ -124,25 +146,16 @@ public class MainActivityFragment extends Fragment implements
                 getResources().getInteger(R.integer.movie_list_columns));
 
         mRecyclerGridView.setLayoutManager(gridLayoutManager);
-        mRecyclerGridView.setHasFixedSize(true);
+
 
 //        mMoviesAdapter = new MoviesAdapter(getActivity(), mMoviesList, this);
 //        mRecyclerGridView.setAdapter(mMoviesAdapter);
-
-        // Call onRestoreInstanceState when the data has been reattached to the mRecyclerGridView
-        mRecyclerGridView.getLayoutManager().onRestoreInstanceState(savedRecyclerViewState);
+//        mRecyclerGridView.setHasFixedSize(true);
 
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .registerOnSharedPreferenceChangeListener(this);
 
-        // Check for Network Connection
-        if (haveNetworkConnection()) {
-            Log.v(LOG_TAG, "There is an internet connection");
-            loadMoviesFromPreferences();
-        } else {
-            Log.v(LOG_TAG, "There is NO internet connection");
-            showErrorMessage();
-        }
+        loadMoviesFromPreferences();
 
         return rootView;
     }
@@ -150,34 +163,14 @@ public class MainActivityFragment extends Fragment implements
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(SAVE_STATE_KEY, mMoviesList);
+        outState.putParcelable(SAVE_STATE_MOVIE_KEY, mMovies);
 
-        // TODO: Save th state of the favMovies list when rotate
+        // Save the state of the favMovies list when rotate
+        outState.putParcelableArrayList(SAVE_STATE_FAV_KEY, mFavMovies);
 
-        // Put state of the position of the RecyclerView
-        outState.putParcelable(RECYCLER_VIEW_STATE, mRecyclerGridView.getLayoutManager()
-                .onSaveInstanceState());
         super.onSaveInstanceState(outState);
     }
 
-    /**
-     * Check for Network Connection
-     */
-    private boolean haveNetworkConnection() {
-
-        // Get reference to the ConnectivityManager to check for network connectivity
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
-        boolean haveNetConnection = false;
-        // Get details on the currently active default data network
-        if (networkInfo != null && networkInfo.isConnected()) {
-            haveNetConnection = true;
-        }
-        return haveNetConnection;
-    }
 
     /**
      * Method that shows error message when there is a problem fetching the data or
@@ -203,50 +196,100 @@ public class MainActivityFragment extends Fragment implements
         Log.v(LOG_TAG, "onStop is called!" );
     }
 
-    /**
-     * Method for loading movies using user's preference sort order
-     * for fetching movies asynchronously
-     */
     private void loadMoviesFromPreferences() {
-
+        // Get preferences according to user's choice
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(getActivity());
 
-        // Update the recycler view with the user's preferences.
         String sortOrderKey = getString(R.string.pref_sort_by_key);
         String sortOrderDefault = getString(R.string.pref_sort_by_popular);
         String sortOrder = sharedPreferences.getString(sortOrderKey, sortOrderDefault);
 
         if (sortOrder.equals(getString(R.string.pref_sort_by_favorites))) {
-            // TODO: Create a separate method for loading the data from the db
             // Load data from the database
             Log.v(LOG_TAG, "The user selected Favorites: " + sortOrder);
-
-            mMoviesAdapter = new MoviesAdapter(getActivity(), favMovies, this);
-            mRecyclerGridView.setAdapter(mMoviesAdapter);
-
-            // Check if there is existing data loaded, if not - set tha data from the adapter
-            if (mMoviesAdapter == null) {
-                mMoviesAdapter.setMovieData(favMovies);
-            }
-
-            getActivity().getSupportLoaderManager().initLoader(ID_FAV_MOVIES_LOADER, null, this);
+            loadFavoriteMovies();
         } else {
-
             Log.v(LOG_TAG, "The user selected " + sortOrder);
-
-            mMoviesAdapter = new MoviesAdapter(getActivity(), mMoviesList, this);
-            mRecyclerGridView.setAdapter(mMoviesAdapter);
-            // Execute the network call on a separate background thread
-            FetchMoviesTask task = new FetchMoviesTask(mMoviesAdapter, this, this);
-
-            // Execute fetching the movie data from a background thread
-            // sortOrder loads the movie data with the default "popular" sorting setting
-            task.execute(sortOrder);
+            loadMoviesFromNetwork(sortOrder);
         }
-
     }
 
+    private void loadMoviesFromNetwork(String sortOrder) {
+
+        // Perform network call
+        MovieDbInterface movieDbInterface = MovieDbApiClient.getClient()
+                .create(MovieDbInterface.class);
+
+        Call<MovieDbResponse> call = movieDbInterface.getMovies(sortOrder, BuildConfig.API_KEY);
+
+        // Print the URL to the Logs
+        HttpUrl urlPrint = movieDbInterface.getMovies(sortOrder, BuildConfig.API_KEY).request().url();
+        Log.d(LOG_TAG, "Print URL: " + urlPrint.toString());
+
+        call.enqueue(new Callback<MovieDbResponse>() {
+
+            @Override
+            public void onResponse(Call<MovieDbResponse> call, Response<MovieDbResponse> response) {
+
+                if (response.isSuccessful()) {
+                    // Hide the Progress Bar
+                    mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+                    mMoviesList = response.body().getResults();
+
+                    Log.d(LOG_TAG, "Number of movies: " + mMoviesList.size());
+
+                    if (mMoviesAdapter == null) {
+                        mMoviesAdapter = new MoviesAdapter(getActivity(), mMoviesList,
+                                MainActivityFragment.this);
+                        mRecyclerGridView.setAdapter(mMoviesAdapter);
+                        mRecyclerGridView.setHasFixedSize(true);
+                    } else {
+                        mMoviesAdapter.setMovieData(mMoviesList);
+                        mMoviesAdapter.notifyDataSetChanged();
+                    }
+
+                    int statusCode = response.code();
+                    Log.d(LOG_TAG, "Response code: " + statusCode);
+                } else {
+                    // Hide the Progress Bar
+                    mLoadingIndicator.setVisibility(View.INVISIBLE);
+
+                    int statusCode = response.code();
+                    Log.d(LOG_TAG, "Response code: " + statusCode);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieDbResponse> call, Throwable t) {
+                // Show the error message for no Connectivity
+                showErrorMessage();
+                Log.e(LOG_TAG, t.toString());
+            }
+        });
+    }
+
+
+    private void loadFavoriteMovies() {
+
+        if (mMoviesAdapter == null) {
+            mMoviesAdapter = new MoviesAdapter(getContext(), mFavMovies, this);
+            mRecyclerGridView.setAdapter(mMoviesAdapter);
+            mRecyclerGridView.setHasFixedSize(true);
+            getActivity().getSupportLoaderManager().initLoader(ID_FAV_MOVIES_LOADER,
+                    null, this);
+        }
+        /*else {
+            mMoviesAdapter.setMovieData(mFavMovies);
+            mMoviesAdapter.notifyDataSetChanged();
+        }*/
+
+        /*LoaderManager loaderManager = getLoaderManager();
+        if (loaderManager.getLoader(0) != null) {
+            loaderManager.initLoader(0, null, this);
+        }*/
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -286,18 +329,6 @@ public class MainActivityFragment extends Fragment implements
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    @Override
-    public void showProgress(boolean visible) {
-
-        // Show Progress Bar if the movies are being fetched from the server,
-        // Hide if not
-        if (visible) {
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        } else {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-        }
-    }
-
 
     /**
      * Method that handles responses to clicks from the grid of movie posters
@@ -306,7 +337,7 @@ public class MainActivityFragment extends Fragment implements
      */
     @Override
     public void onClick(Movies movies) {
-        //Movies currentMovie = movies;
+        mMovies = movies;
         Intent intent = new Intent(getContext(), DetailActivity.class);
         //Movies currentMovie = mMoviesList.get();
         intent.putExtra(MOVIE_DETAILS_KEY, movies);
@@ -357,14 +388,15 @@ public class MainActivityFragment extends Fragment implements
 
         Log.d(LOG_TAG, "onLoadFinished is called");
 
-        favMovies = new ArrayList<>();
+        mFavMovies = new ArrayList<>();
 
         // The Movie Cursor is assigned to the new one
         mFavMoviesData = cursor;
 
         // Loop through each row in the Cursor and add a new Movies
         while (cursor.moveToNext()) {
-            favMovies.add(new Movies(cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_ID)),
+            mFavMovies.add(new Movies(
+                    cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_ID)),
                     cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_TITLE)),
                     cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_ORIGINAL_TITLE)),
                     cursor.getString(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_RELEASE_DATE)),
@@ -379,7 +411,8 @@ public class MainActivityFragment extends Fragment implements
         // instead call swapCursor()
         //cursor.close();
 
-        mMoviesAdapter.setMovieData(favMovies);
+        mMoviesAdapter.setMovieData(mFavMovies);
+        mMoviesAdapter.notifyDataSetChanged();
 
         mMoviesAdapter.swapCursor(cursor);
     }
@@ -389,6 +422,5 @@ public class MainActivityFragment extends Fragment implements
         Log.d(LOG_TAG, "onLoadReset is called");
 
         mMoviesAdapter.swapCursor(null);
-
     }
 }
