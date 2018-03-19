@@ -117,7 +117,7 @@ public class MovieProvider extends ContentProvider {
 
         int match = sUriMatcher.match(uri);
 
-        Uri returnUri = null;
+        Uri returnUri;
 
         switch (match) {
             case CODE_MOVIES:
@@ -153,7 +153,7 @@ public class MovieProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
 
         // Keep track of the number of deleted movies
-        int moviesDeleted = 0;
+        int moviesDeleted;
 
         switch (match){
             case CODE_MOVIES:

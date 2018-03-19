@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/review_card"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:padding="6dp"
+    tools:showIn="@layout/fragment_activity_detail_movie">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/movie_review_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="horizontal" />
+
+    <TextView
+        android:id="@+id/error_message_review"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/error_msg_padding"
+        android:text="@string/error_message"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        android:visibility="invisible" />
+
+    <ProgressBar
+        android:id="@+id/loading_indicator_review"
+        android:layout_width="@dimen/progress_bar_size"
+        android:layout_height="@dimen/progress_bar_size"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
+
+</FrameLayout>
+

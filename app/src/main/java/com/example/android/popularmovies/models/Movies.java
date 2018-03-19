@@ -2,6 +2,7 @@ package com.example.android.popularmovies.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,26 +15,14 @@ import com.google.gson.annotations.SerializedName;
  * Created by fifiv on 01/02/2018.
  */
 
-public class Movies implements Parcelable {
-
-    public static final Creator<Movies> CREATOR = new Creator<Movies>() {
-        @Override
-        public Movies createFromParcel(Parcel in) {
-            return new Movies(in);
-        }
-
-        @Override
-        public Movies[] newArray(int size) {
-            return new Movies[size];
-        }
-    };
+public class Movies implements Parcelable{
 
     /**
      * Movie ID
      */
     @SerializedName("id")
     @Expose
-    private String mMovieId;
+    private int mMovieId;
 
     /**
      * Movie Title
@@ -104,19 +93,17 @@ public class Movies implements Parcelable {
             10749, 878, 10770, 53, 10752, 37
     );
 
-    private String mRating;
 
     /**
      * Create empty Movies constructor
-     *
      */
     public Movies() {
     }
 
     // Constructor that is used for the Database
     // TODO: Add the Genres
-    public Movies(String movieId, String movieTitle, String movieOriginalTitle, String releaseDate,
-                  String moviePoster, String movieBackdrop, String voteAverage, String plotSynopsis) {
+    public Movies(int movieId, String movieTitle, String movieOriginalTitle, String releaseDate,
+                  String moviePoster, String movieBackdrop, double rating, String plotSynopsis) {
 
         mMovieId = movieId;
         mMovieTitle = movieTitle;
@@ -124,12 +111,13 @@ public class Movies implements Parcelable {
         mReleaseDate = releaseDate;
         mMoviePoster = moviePoster;
         mMovieBackdrop = movieBackdrop;
-        mRating = voteAverage;
+        mVoteAverage = rating;
         mPlotSynopsis = plotSynopsis;
     }
 
+
     protected Movies(Parcel in) {
-        mMovieId = in.readString();
+        mMovieId = in.readInt();
         mMovieTitle = in.readString();
         mMovieOriginalTitle = in.readString();
         mReleaseDate = in.readString();
@@ -137,13 +125,25 @@ public class Movies implements Parcelable {
         mMovieBackdrop = in.readString();
         mVoteAverage = in.readDouble();
         mPlotSynopsis = in.readString();
-        //mMovieGenreIds = in.createIntArray();
+        mMovieGenreIds = in.createIntArray();
     }
+
+    public static final Creator<Movies> CREATOR = new Creator<Movies>() {
+        @Override
+        public Movies createFromParcel(Parcel in) {
+            return new Movies(in);
+        }
+
+        @Override
+        public Movies[] newArray(int size) {
+            return new Movies[size];
+        }
+    };
 
     /**
      * Get the Movie's Id
      */
-    public String getMovieId() {
+    public int getMovieId() {
         return mMovieId;
     }
 
@@ -208,12 +208,23 @@ public class Movies implements Parcelable {
         mMovieGenreIds = genreIds;
     }
 
+
     public String getMovieGenres(int[] genreIds) {
         List<String> genres = new ArrayList<>();
 
-        String movieGenereString;
+        String movieGenreString;
+        int index;
 
-        return null;
+        for (int id: genreIds) {
+            index = GENRE_IDS.indexOf(id);
+            if (index >= 0) {
+                genres.add(GENRE_NAMES[index]);
+            }
+        }
+
+        movieGenreString = TextUtils.join(", ", genres);
+
+        return movieGenreString;
     }
 
     @Override
@@ -223,7 +234,7 @@ public class Movies implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(mMovieId);
+        parcel.writeInt(mMovieId);
         parcel.writeString(mMovieTitle);
         parcel.writeString(mMovieOriginalTitle);
         parcel.writeString(mReleaseDate);
@@ -231,6 +242,6 @@ public class Movies implements Parcelable {
         parcel.writeString(mMovieBackdrop);
         parcel.writeDouble(mVoteAverage);
         parcel.writeString(mPlotSynopsis);
-        //parcel.writeIntArray(mMovieGenreIds);
+        parcel.writeIntArray(mMovieGenreIds);
     }
 }

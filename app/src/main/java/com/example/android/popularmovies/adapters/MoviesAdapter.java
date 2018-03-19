@@ -29,15 +29,11 @@ import butterknife.ButterKnife;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder> {
 
-    private static final String IMAGES_BASE_URL = "https://image.tmdb.org/t/p/";
-    private static final String FILE_SIZE = "w342";
-
     // Class variable for the Cursor that holds task data
     private Cursor mCursor;
 
     private Context mContext;
     private List<Movies> mMoviesList;
-    //private MovieDbResponse mMovieDbResponse;
 
     final private MovieAdapterOnClickHandler mClickHandler;
 
@@ -102,12 +98,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
         Movies currentMovie = mMoviesList.get(position);
         String moviePosterPath = currentMovie.getPoster();
 
-        String posterPathUrlString = IMAGES_BASE_URL + FILE_SIZE + moviePosterPath;
+        String posterPathUrlString = NetworkUtils.buildPosterPathUrl(moviePosterPath);
         Log.d("MainActivity", "Poster Url: " + posterPathUrlString);
 
         Picasso.with(mContext)
                 .load(posterPathUrlString)
                 .placeholder(R.drawable.movie_poster)
+                .error(R.drawable.movie_poster)
                 .into(holder.moviePosterThumbnail);
     }
 
@@ -150,4 +147,5 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
         // Return the new cursor
         return temp;
     }
+
 }

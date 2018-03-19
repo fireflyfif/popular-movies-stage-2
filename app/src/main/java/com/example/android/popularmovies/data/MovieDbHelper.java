@@ -61,11 +61,14 @@ public class MovieDbHelper extends SQLiteOpenHelper{
 
                 FavMovieEntry.COLUMN_BACKDROP_PATH          + " TEXT NOT NULL, " +
 
-                FavMovieEntry.COLUMN_MOVIE_RATING           + " REAL NOT NULL, " +
+                FavMovieEntry.COLUMN_MOVIE_RATING           + " REAL, " +
 
                 FavMovieEntry.COLUMN_MOVIE_RELEASE_DATE     + " TEXT NOT NULL, " +
 
-                FavMovieEntry.COLUMN_MOVIE_SYNOPSIS         + " TEXT NOT NULL" + ");";
+                FavMovieEntry.COLUMN_MOVIE_SYNOPSIS         + " TEXT NOT NULL, " +
+
+
+                " UNIQUE (" + FavMovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE" + ");";
 
         /*
          *  Execute the SQL with the execSQL method of the SQLite database object.

@@ -1,7 +1,9 @@
 package com.example.android.popularmovies.ui;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,18 +30,16 @@ import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private static final String IMAGES_BASE_URL = "https://image.tmdb.org/t/p/";
-    private static final String FILE_SIZE_BIGGER = "w500";
-
     private static final String MOVIE_DETAILS_KEY = "movie_parcel";
+    private static final String SAVE_STATE_IS_FAV = "is_favorite";
 
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     public static Movies sMovie;
 
-    private boolean isAdded = false;
-
     private Uri mCurrentMovieUri;
+
+    private boolean mIsFavMovie;
 
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -63,11 +63,10 @@ public class DetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent receiveIntent = this.getIntent();
-
         if (receiveIntent != null) {
+
             if (receiveIntent.hasExtra(MOVIE_DETAILS_KEY)) {
                 sMovie = receiveIntent.getParcelableExtra(MOVIE_DETAILS_KEY);
-
                 // Display the current selected movie title on the Action Bar
                 getSupportActionBar().setTitle(sMovie.getMovieTitle());
 
@@ -75,26 +74,36 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
 
-        isAdded = false;
+        if (savedInstanceState != null) {
+            mIsFavMovie = savedInstanceState.getBoolean(SAVE_STATE_IS_FAV);
+        }
+
+        //mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_border));
 
         mFabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (!isAddedToFavorites()) {
                     addToFavorites();
-                    Toast.makeText(DetailActivity.this, "Added to favorites",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    // Delete from the database
-                    removeFromFavorites();
+
                     Toast.makeText(DetailActivity.this, "Removed from favorites",
                             Toast.LENGTH_SHORT).show();
-                }
+                    //setFabIcons();
+                } else if (isAddedToFavorites()){
+                    removeFromFavorites();
 
+                    Toast.makeText(DetailActivity.this, "Added to favorites",
+                            Toast.LENGTH_SHORT).show();
+                    //setFabIcons();
+                }
             }
         });
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVE_STATE_IS_FAV, mIsFavMovie);
     }
 
     /**
@@ -106,12 +115,14 @@ public class DetailActivity extends AppCompatActivity {
         // Set title to the current Movie
         collapsingToolbarLayout.setTitle(movies.getMovieTitle());
 
-        String backdropUrlString = IMAGES_BASE_URL + FILE_SIZE_BIGGER;
+        String backdropIdString = movies.getMovieBackdrop();
+        String backdropUrlString = NetworkUtils.buildPosterBackdropUrl(backdropIdString);
 
         // Display the second poster image background
         Picasso.with(mMovieBackdropImage.getContext())
-                .load(backdropUrlString + movies.getMovieBackdrop())
+                .load(backdropUrlString)
                 .placeholder(R.drawable.movie_poster)
+                .error(R.drawable.movie_poster)
                 .into(mMovieBackdropImage);
     }
 
@@ -128,44 +139,72 @@ public class DetailActivity extends AppCompatActivity {
         contentValues.put(FavMovieEntry.COLUMN_MOVIE_RELEASE_DATE, sMovie.getReleaseDate());
         contentValues.put(FavMovieEntry.COLUMN_MOVIE_RATING, sMovie.getVoteAverage());
         contentValues.put(FavMovieEntry.COLUMN_MOVIE_SYNOPSIS, sMovie.getPlotSynopsis());
-
-        Uri uri;
+        //contentValues.put(FavMovieEntry.COLUMN_MOVIE_GENRES, sMovie.getMovieGenres(sMovie.getGenreIds()));
 
         try {
-           uri = getContentResolver().insert(FavMovieEntry.CONTENT_URI,
+           mCurrentMovieUri = getContentResolver().insert(FavMovieEntry.CONTENT_URI,
                     contentValues);
         } catch (IllegalArgumentException e) {
-            uri = null;
+            mCurrentMovieUri = null;
             Log.v(LOG_TAG, e.toString());
         }
 
-        if (uri != null) {
-            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_SHORT).show();
+        if (mCurrentMovieUri != null) {
+            //Toast.makeText(getBaseContext(), mCurrentMovieUri.toString(), Toast.LENGTH_SHORT).show();
+            isAddedToFavorites();
         }
 
         //finish();
     }
 
-    public void removeFromFavorites() {
+    private void removeFromFavorites() {
+        int rowsDeleted;
 
-        if (mCurrentMovieUri == null) {
-            int rowsDeleted = getContentResolver().delete(
+        if (mCurrentMovieUri != null) {
+            rowsDeleted = getContentResolver().delete(
                     mCurrentMovieUri,
                     null,
                     null);
-
         }
-
     }
 
     private boolean isAddedToFavorites() {
 
-        if (isAdded) {
-            mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_done));
-        } else {
-            mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add));
-        }
+        String[] projection = {FavMovieEntry.COLUMN_MOVIE_ID};
+        String selection = FavMovieEntry.COLUMN_MOVIE_ID + "=?";
+        String[] selectionArgs = new String[]{
+                String.valueOf(sMovie.getMovieId())};
 
-        return isAdded;
+        Cursor cursor = this.getContentResolver().query(
+                FavMovieEntry.CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+            if (cursor.getCount() > 0) {
+                mIsFavMovie = true;
+                setFabIcons();
+                long currentIndex = cursor.getLong(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_ID));
+                mCurrentMovieUri = ContentUris.withAppendedId(FavMovieEntry.CONTENT_URI, currentIndex);
+            } else {
+                mIsFavMovie = false;
+                //setFabIcons();
+                mCurrentMovieUri = null;
+            }
+            cursor.close();
+        }
+        return mIsFavMovie;
+    }
+
+    private void setFabIcons() {
+
+        if (mIsFavMovie) {
+            mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+        } else {
+            mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_border));
+        }
     }
 }

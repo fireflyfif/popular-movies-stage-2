@@ -64,6 +64,8 @@ public class MovieContract {
         /* Movie release date for the favorite movies */
         public static final String COLUMN_MOVIE_RELEASE_DATE = "release_date";
 
+        /* Movie genres of the favorite movies */
+        //public static final String COLUMN_MOVIE_GENRES = "genres";
 
     }
 }

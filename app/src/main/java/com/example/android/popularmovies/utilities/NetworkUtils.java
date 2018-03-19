@@ -30,13 +30,21 @@ public final class NetworkUtils {
 
     public static final String MOVIES_BASE_URL = "https://api.themoviedb.org/3/";
 
-    private static final String MOVIE_PATH = "movie";
+    public static final String MOVIE_PATH = "movie";
 
-    private static final String API_KEY_PARAM = "api_key";
+    public static final String API_KEY_PARAM = "api_key";
+
+    public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/";
+    public static final String YOUTUBE_WATCH_PARAM = "watch?v=";
+
+    public static final String YOUTUBE_IMG_URL = "http://img.youtube.com/vi/";
+    //Full-sized image
+    public static final String YOUTUBE_JPG_PARAM = "/0.jpg";
 
 
     /**
      * Check for Network Connection
+     * TODO: To be deleted
      */
     public static boolean haveNetworkConnection(Context context) {
 
@@ -56,6 +64,7 @@ public final class NetworkUtils {
 
     /**
      * Retrieves the proper URL to query for the movie data.
+     * TODO: To be deleted
      *
      * @param apiKey    uses the API KEY for fetching data
      * @param sortOrder used to fetch different content according to user's preferences
@@ -96,8 +105,17 @@ public final class NetworkUtils {
         return backdropUrlString;
     }
 
+    public static String buildYouTubeThumbnilUrl(String videoKey) {
+
+        String videoThumbnailUrl = YOUTUBE_IMG_URL + videoKey + YOUTUBE_JPG_PARAM;
+        Log.v(TAG, "Built URI for video thumbnail: " + videoThumbnailUrl);
+
+        return videoThumbnailUrl;
+    }
+
     /**
      * This method returns the entire result from the HTTP response.
+     * TODO: To be deleted
      *
      * @param url the URL to fetch the HTTP response from.
      * @return The contents of the HTTP response, null if no response
