@@ -1,7 +1,9 @@
 package com.example.android.popularmovies.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,31 +29,12 @@ import java.util.List;
  * Created by fifiv on 16/03/2018.
  */
 
-public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>
-        implements View.OnClickListener {
+public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
 
     private Context mContext;
     private List<Reviews> mReviewList;
 
-    private int mExpandedPosition = -1;
 
-    @Override
-    public void onClick(View view) {
-        ReviewViewHolder holder = (ReviewViewHolder) view.getTag();
-        //String string = String.valueOf(mReviewList.get(holder.getPosition()));
-
-        // Check for an expanded view, collapse if you find one
-        if (mExpandedPosition >= 0) {
-            int prev = mExpandedPosition;
-            notifyItemChanged(prev);
-        }
-
-        // Set the current position to expanded
-        mExpandedPosition = holder.getPosition();
-        notifyItemChanged(mExpandedPosition);
-
-
-    }
 
     //private final ReviewsAdapterOnClickHandler mClickHandler;
 
@@ -73,8 +56,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
         ReviewViewHolder holder = new ReviewViewHolder(view);
 
-        holder.itemView.setOnClickListener(ReviewAdapter.this);
-        holder.itemView.setTag(holder);
 
         return holder;
     }
@@ -82,17 +63,21 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     @Override
     public void onBindViewHolder(@NonNull final ReviewViewHolder holder, final int position) {
 
-        Reviews reviews = mReviewList.get(position);
+        final Reviews reviews = mReviewList.get(position);
 
         holder.mReviewContent.setText(reviews.getContent());
         holder.mReviewAuthor.setText(reviews.getAuthor());
-
-        /*if (position == mExpandedPosition) {
-            holder.expandableLayout.setVisibility(View.VISIBLE);
-        } else {
-            holder.expandableLayout.setVisibility(View.GONE);
-        }*/
-
+        holder.mReadMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String reviewUrl = reviews.getUrl();
+                Uri webPage = Uri.parse(reviewUrl);
+                Intent intent = new Intent(Intent.ACTION_VIEW, webPage);
+                if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+                    mContext.startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override
@@ -107,18 +92,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     public class ReviewViewHolder extends RecyclerView.ViewHolder {
 
-        LinearLayout expandableLayout;
+        final CardView mCardView;
         final TextView mReviewAuthor;
         final TextView mReviewContent;
-        final ImageView mArrow;
+        final TextView mReadMore;
+
 
         public ReviewViewHolder(View itemView) {
             super(itemView);
 
-            expandableLayout = itemView.findViewById(R.id.review_item_layout);
+            mCardView = itemView.findViewById(R.id.review_cardView);
             mReviewAuthor = itemView.findViewById(R.id.review_author);
             mReviewContent = itemView.findViewById(R.id.review_content);
-            mArrow = itemView.findViewById(R.id.collapsing_arrow);
+            mReadMore = itemView.findViewById(R.id.read_more_tv);
         }
     }
 

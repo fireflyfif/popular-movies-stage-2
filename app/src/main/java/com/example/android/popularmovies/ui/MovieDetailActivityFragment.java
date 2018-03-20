@@ -141,7 +141,6 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         mTrailerPB.setVisibility(View.VISIBLE);
         mReviewPB.setVisibility(View.VISIBLE);
 
-
         Intent receiveIntent = getActivity().getIntent();
 
         if (receiveIntent != null) {

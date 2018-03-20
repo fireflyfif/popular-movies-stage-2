@@ -37,4 +37,6 @@
     <string name="original_title_label">Original Title</string>
     <string name="movie_poster_description">Movie poster</string>
     <string name="genres_label">Genres</string>
+    <string name="read_more">Read More</string>
+    <string name="author">Author:</string>
 </resources>

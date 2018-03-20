@@ -4,11 +4,10 @@
     android:layout_height="wrap_content"
     android:layout_margin="6dp">
 
-    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="6dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/trailer_thumbnail"
@@ -16,7 +15,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:padding="10dp"
             android:src="@drawable/movie_poster" />
 
         <TextView
@@ -25,6 +23,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="10dp"
+            android:ellipsize="end"
             android:textColor="@android:color/white"
             android:text="Title of the Movie Trailer" />
 

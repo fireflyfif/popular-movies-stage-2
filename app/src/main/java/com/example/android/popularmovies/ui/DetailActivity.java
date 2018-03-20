@@ -78,23 +78,31 @@ public class DetailActivity extends AppCompatActivity {
             mIsFavMovie = savedInstanceState.getBoolean(SAVE_STATE_IS_FAV);
         }
 
-        //mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_border));
+        if (isAddedToFavorites()) {
+            mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+        } else {
+            mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_border));
+        }
+
 
         mFabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!isAddedToFavorites()) {
                     addToFavorites();
-
-                    Toast.makeText(DetailActivity.this, "Removed from favorites",
-                            Toast.LENGTH_SHORT).show();
-                    //setFabIcons();
-                } else if (isAddedToFavorites()){
-                    removeFromFavorites();
+                    mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
 
                     Toast.makeText(DetailActivity.this, "Added to favorites",
                             Toast.LENGTH_SHORT).show();
-                    //setFabIcons();
+
+                    mIsFavMovie = false;
+                } else {
+                    removeFromFavorites();
+                    mFabButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_border));
+
+                    Toast.makeText(DetailActivity.this, "Removed from favorites",
+                            Toast.LENGTH_SHORT).show();
+                    mIsFavMovie = true;
                 }
             }
         });
@@ -169,6 +177,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private boolean isAddedToFavorites() {
+        boolean isFavorite;
 
         String[] projection = {FavMovieEntry.COLUMN_MOVIE_ID};
         String selection = FavMovieEntry.COLUMN_MOVIE_ID + "=?";
@@ -186,7 +195,6 @@ public class DetailActivity extends AppCompatActivity {
         if (cursor != null && cursor.moveToFirst()) {
             if (cursor.getCount() > 0) {
                 mIsFavMovie = true;
-                setFabIcons();
                 long currentIndex = cursor.getLong(cursor.getColumnIndex(FavMovieEntry.COLUMN_MOVIE_ID));
                 mCurrentMovieUri = ContentUris.withAppendedId(FavMovieEntry.CONTENT_URI, currentIndex);
             } else {
