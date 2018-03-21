@@ -252,11 +252,11 @@ public class DetailActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_share:
-                Intent shareIntent = createShareMovieIntent();
+                /*Intent shareIntent = createShareMovieIntent();
                 if (shareIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(shareIntent);
-                }
-                return true;
+                }*/
+                return false;
         }
 
         return super.onOptionsItemSelected(item);

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -64,6 +65,9 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
 
     private List<Videos> mVideoList;
     private VideoAdapter mVidAdapter;
+    public static Videos sVideos;
+    public static Movies sMovie;
+    private String mMovieId;
 
     private List<Reviews> mReviewList;
     private ReviewAdapter mReviewAdapter;
@@ -151,12 +155,12 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         if (receiveIntent != null) {
 
             if (receiveIntent.hasExtra(MOVIE_DETAILS_KEY)) {
-                Movies movies = receiveIntent.getParcelableExtra(MOVIE_DETAILS_KEY);
-                String movieId = String.valueOf(movies.getMovieId());
+                sMovie = receiveIntent.getParcelableExtra(MOVIE_DETAILS_KEY);
+                mMovieId = String.valueOf(sMovie.getMovieId());
 
-                populateUI(movies);
-                loadTrailers(movieId);
-                loadReviews(movieId);
+                populateUI(sMovie);
+                loadTrailers(mMovieId);
+                loadReviews(mMovieId);
             }
         }
         return rootView;
@@ -372,11 +376,10 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         switch (item.getItemId()) {
 
             case R.id.action_share:
-                /*Intent shareIntent = createShareMovieIntent();
+                Intent shareIntent = createShareMovieIntent();
                 if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(shareIntent);
-                }*/
-
+                }
                 return true;
             default:
                 break;
@@ -387,25 +390,30 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
 
     private Intent createShareMovieIntent() {
 
-        // TODO: Create an Intent to share the trailer URL
         // Hard-coded video key to Spirited Away
         String trailerSpiritedAwayUrl = "ByXuk9QqQkk";
 
-        Intent shareIntent = new Intent(Intent.ACTION_SEND)
-                .setType("text/plain")
-                .putExtra(Intent.EXTRA_SUBJECT, "Check out this movie trailer: ");
+        // Create an Intent to share the trailer URL
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
 
-        if (mVideoList != null) {
-            Videos currentVideo = mVideoList.get(getId());
+        if (mVideoList != null && mVideoList.size() > 0) {
 
-            String trailerUrl = NetworkUtils.buildYouTubeTrailerUrl(currentVideo.getKey());
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Check out this movie trailer: ");
+            String trailerUrl = NetworkUtils.buildYouTubeTrailerUrl(mVideoList.get(0).getKey());
 
             shareIntent.putExtra(Intent.EXTRA_TEXT, trailerUrl);
 
             Log.d(LOG_TAG, "Trailer URL: " + trailerUrl);
+        } else {
+            shareIntent.setType("text/plain");
+            String movieTitle = sMovie.getMovieTitle();
+            String movieOverview = sMovie.getPlotSynopsis();
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this movie: " + movieTitle +
+                    "\nOverview: " + movieOverview);
         }
-
 
         return shareIntent;
     }
+
 }
