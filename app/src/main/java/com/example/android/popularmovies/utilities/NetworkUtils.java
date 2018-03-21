@@ -105,7 +105,14 @@ public final class NetworkUtils {
         return backdropUrlString;
     }
 
-    public static String buildYouTubeThumbnilUrl(String videoKey) {
+    public static String buildYouTubeTrailerUrl(String videoKey) {
+        String youTubeTrailerUrl = YOUTUBE_BASE_URL + YOUTUBE_WATCH_PARAM + videoKey;
+        Log.v(TAG, "Build URI for trailer: " + youTubeTrailerUrl);
+
+        return youTubeTrailerUrl;
+    }
+
+    public static String buildYouTubeThumbnailUrl(String videoKey) {
 
         String videoThumbnailUrl = YOUTUBE_IMG_URL + videoKey + YOUTUBE_JPG_PARAM;
         Log.v(TAG, "Built URI for video thumbnail: " + videoThumbnailUrl);

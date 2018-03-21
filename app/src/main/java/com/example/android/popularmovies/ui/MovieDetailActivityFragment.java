@@ -4,12 +4,16 @@ package com.example.android.popularmovies.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -68,8 +72,6 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
     ScrollView mScrollView;
     @BindView(R.id.movie_poster_detail)
     ImageView mMoviePoster;
-    /*@BindView(R.id.movie_backdrop_image)
-    ImageView mMovieBackdropImage;*/
     @BindView(R.id.movie_original_title)
     TextView mMovieOriginalTitle;
     @BindView(R.id.movie_synopsis)
@@ -82,6 +84,8 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
     RatingBar mMovieRatingBar;
     @BindView(R.id.genres)
     TextView mMovieGenres;
+    @BindView(R.id.genres_label)
+    TextView mGenresLabel;
 
     // Trailer Views
     @BindView(R.id.video_cardView)
@@ -131,6 +135,7 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         View rootView = inflater.inflate(R.layout.fragment_activity_detail_movie, container, false);
 
         ButterKnife.bind(this, rootView);
+        setHasOptionsMenu(true);
 
         // Set the Trailers in Recycler View
         mVideoList = new ArrayList<>();
@@ -197,19 +202,24 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         mMovieReleaseDate.setText(movies.getReleaseDate());
 
         // Set genres to the current movie
-        /*if (mIsFavMovie) {
-            mMovieGenres.setText("Some genres here");
-        } else {
-            mMovieGenres.setText(movies.getMovieGenres(movies.getGenreIds()));
-        }*/
-
+        if (movies.getGenreIds() != null) {
+            String genresString = movies.getMovieGenres(movies.getGenreIds());
+            if (genresString != null) {
+                mMovieGenres.setText(genresString);
+                Log.d(LOG_TAG, "Genres: " + genresString);
+            } else {
+                Log.d(LOG_TAG, "No Genres");
+                mMovieGenres.setText(R.string.no_genres);
+            }
+        } else  {
+            mGenresLabel.setVisibility(View.INVISIBLE);
+            mMovieGenres.setText("");
+        }
     }
 
-    private void loadTrailers(String movieId) {
 
-        // Print the URL to the Logs
-//        HttpUrl urlPrint = movieDbInterface.getMovies(movieId, BuildConfig.API_KEY).request().url();
-//        Log.d(LOG_TAG, "Print URL: " + urlPrint.toString());
+
+    private void loadTrailers(String movieId) {
 
         MainApplication.apiManager.getTrailers(movieId, BuildConfig.API_KEY,
                 new Callback<VideosDbResponse>() {
@@ -229,7 +239,7 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
                             Log.d(LOG_TAG, "Number of trailers: " + mVideoList.size());
 
                             if (mVideoList.size() == 0) {
-                                mErrorMessageTrailers.setText("No Trailers for this movie");
+                                mErrorMessageTrailers.setText(R.string.no_trailers);
                                 mErrorMessageTrailers.setVisibility(View.VISIBLE);
                             }
 
@@ -270,8 +280,7 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
     @Override
     public void onClick(Videos videos) {
 
-        String trailerUrl = NetworkUtils.YOUTUBE_BASE_URL + NetworkUtils.YOUTUBE_WATCH_PARAM +
-                videos.getKey();
+        String trailerUrl = NetworkUtils.buildYouTubeTrailerUrl(videos.getKey());
 
         Intent videoIntent = new Intent(
                 Intent.ACTION_VIEW,
@@ -280,6 +289,7 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         if (videoIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivity(videoIntent);
         }
+        Log.d(LOG_TAG, "Trailer URL: " + trailerUrl);
     }
 
     private void loadReviews(String movieId) {
@@ -303,7 +313,7 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
                             Log.d(LOG_TAG, "Number of reviews: " + mReviewList.size());
 
                             if (mReviewList.size() == 0) {
-                                mErrorMessage.setText("No Reviews for this movie");
+                                mErrorMessage.setText(R.string.no_reviews);
                                 mErrorMessage.setVisibility(View.VISIBLE);
                             }
 
@@ -340,7 +350,6 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
                 });
     }
 
-
     /**
      * Method that shows error message when there is a problem fetching the data or
      * there is no internet connection
@@ -351,5 +360,52 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
 
         // Show the error message
         mErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.action_share:
+                /*Intent shareIntent = createShareMovieIntent();
+                if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(shareIntent);
+                }*/
+
+                return true;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private Intent createShareMovieIntent() {
+
+        // TODO: Create an Intent to share the trailer URL
+        // Hard-coded video key to Spirited Away
+        String trailerSpiritedAwayUrl = "ByXuk9QqQkk";
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_SUBJECT, "Check out this movie trailer: ");
+
+        if (mVideoList != null) {
+            Videos currentVideo = mVideoList.get(getId());
+
+            String trailerUrl = NetworkUtils.buildYouTubeTrailerUrl(currentVideo.getKey());
+
+            shareIntent.putExtra(Intent.EXTRA_TEXT, trailerUrl);
+
+            Log.d(LOG_TAG, "Trailer URL: " + trailerUrl);
+        }
+
+
+        return shareIntent;
     }
 }

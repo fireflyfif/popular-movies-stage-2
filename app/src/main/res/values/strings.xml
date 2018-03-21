@@ -39,4 +39,8 @@
     <string name="genres_label">Genres</string>
     <string name="read_more">Read More</string>
     <string name="author">Author:</string>
+    <string name="no_genres">No genres</string>
+    <string name="no_trailers">No Trailers for this movie</string>
+    <string name="no_reviews">No Reviews for this movie</string>
+    <string name="share_settings">Share</string>
 </resources>

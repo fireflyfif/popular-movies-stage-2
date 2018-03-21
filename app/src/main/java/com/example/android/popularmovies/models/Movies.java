@@ -203,11 +203,6 @@ public class Movies implements Parcelable{
         return mMovieGenreIds;
     }
 
-    // May not needed
-    public void setGenreIds(int[] genreIds) {
-        mMovieGenreIds = genreIds;
-    }
-
 
     public String getMovieGenres(int[] genreIds) {
         List<String> genres = new ArrayList<>();
@@ -215,7 +210,7 @@ public class Movies implements Parcelable{
         String movieGenreString;
         int index;
 
-        for (int id: genreIds) {
+        for (int id : genreIds) {
             index = GENRE_IDS.indexOf(id);
             if (index >= 0) {
                 genres.add(GENRE_NAMES[index]);

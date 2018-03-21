@@ -55,7 +55,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         Videos videos = mVideosList.get(position);
         String videoThumbnailKey = videos.getKey();
 
-        String videoThumbnailUrl = NetworkUtils.buildYouTubeThumbnilUrl(videoThumbnailKey);
+        String videoThumbnailUrl = NetworkUtils.buildYouTubeThumbnailUrl(videoThumbnailKey);
         Log.d("DetailActivity", "Video Thumbnail Url: " + videoThumbnailUrl);
 
         Picasso.with(mContext)
