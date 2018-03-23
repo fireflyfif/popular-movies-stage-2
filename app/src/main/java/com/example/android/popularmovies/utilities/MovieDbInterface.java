@@ -10,6 +10,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
+ * The MovieDb Interface with the endpoints for each call
+ *
  * Created by fifiv on 07/03/2018.
  */
 

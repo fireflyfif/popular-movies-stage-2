@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -44,13 +45,8 @@ public class DetailActivity extends AppCompatActivity {
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     public static Movies sMovie;
-    public Videos mVideos;
-    private String mMovieId;
-
-    private Uri mCurrentMovieUri;
-
-    private boolean mIsFavMovie;
-
+    @BindView(R.id.nested_scroll)
+    NestedScrollView nestedScrollView;
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
     @BindView(R.id.toolbar)
@@ -59,7 +55,8 @@ public class DetailActivity extends AppCompatActivity {
     ImageView mMovieBackdropImage;
     @BindView(R.id.fab_button)
     FloatingActionButton mFabButton;
-
+    private Uri mCurrentMovieUri;
+    private boolean mIsFavMovie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +74,6 @@ public class DetailActivity extends AppCompatActivity {
 
             if (receiveIntent.hasExtra(MOVIE_DETAILS_KEY)) {
                 sMovie = receiveIntent.getParcelableExtra(MOVIE_DETAILS_KEY);
-                mMovieId = String.valueOf(sMovie.getMovieId());
 
                 // Display the current selected movie title on the Action Bar
                 getSupportActionBar().setTitle(sMovie.getMovieTitle());
@@ -137,7 +133,7 @@ public class DetailActivity extends AppCompatActivity {
     /**
      * Method that populates the backdrop image with the current movie poster
      *
-     * @param movies creates a movie object
+     * @param movies Creates a movie object
      */
     public void populateUI(Movies movies) {
         // Set title to the current Movie
@@ -149,11 +145,15 @@ public class DetailActivity extends AppCompatActivity {
         // Display the second poster image background
         Picasso.with(mMovieBackdropImage.getContext())
                 .load(backdropUrlString)
-                .placeholder(R.drawable.movie_poster)
-                .error(R.drawable.movie_poster)
+                .placeholder(R.drawable.movie_placeholder_02)
+                .error(R.drawable.movie_placeholder_02)
                 .into(mMovieBackdropImage);
     }
 
+
+    /**
+     * Method that adds selected movie to the database using the Content Resolver
+     */
     public void addToFavorites() {
 
         // Create new content values object
@@ -169,7 +169,7 @@ public class DetailActivity extends AppCompatActivity {
         contentValues.put(FavMovieEntry.COLUMN_MOVIE_SYNOPSIS, sMovie.getPlotSynopsis());
 
         try {
-           mCurrentMovieUri = getContentResolver().insert(FavMovieEntry.CONTENT_URI,
+            mCurrentMovieUri = getContentResolver().insert(FavMovieEntry.CONTENT_URI,
                     contentValues);
         } catch (IllegalArgumentException e) {
             mCurrentMovieUri = null;
@@ -180,9 +180,11 @@ public class DetailActivity extends AppCompatActivity {
             isAddedToFavorites();
         }
 
-        //finish();
     }
 
+    /**
+     * Method to delete a movie from the database
+     */
     private void removeFromFavorites() {
         int rowsDeleted;
 
@@ -194,6 +196,12 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Method that checks if the current movie is currently into the database
+     * by queering it with the help of the Content resolver
+     *
+     * @return boolean whether it's in the database or not
+     */
     private boolean isAddedToFavorites() {
         boolean isFavorite = false;
 
@@ -217,7 +225,7 @@ public class DetailActivity extends AppCompatActivity {
                 mCurrentMovieUri = ContentUris.withAppendedId(FavMovieEntry.CONTENT_URI, currentIndex);
             } else {
                 isFavorite = false;
-                //setFabIcons();
+
                 mCurrentMovieUri = null;
             }
             cursor.close();
@@ -226,6 +234,10 @@ public class DetailActivity extends AppCompatActivity {
         return isFavorite;
     }
 
+    /**
+     * Method that sets the icons on the Floating action button that saves and deletes
+     * movies from the database
+     */
     private void setFabIcons() {
 
         if (isAddedToFavorites()) {
@@ -248,35 +260,15 @@ public class DetailActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+                return false;
 
             case R.id.action_share:
-                /*Intent shareIntent = createShareMovieIntent();
-                if (shareIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(shareIntent);
-                }*/
                 return false;
+            default:
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private Intent createShareMovieIntent() {
-
-        // TODO: Create an Intent to share the trailer URL
-        // Hard-coded video key to the movie Spirited Away
-        String trailerSpiritedAwayUrl = "ByXuk9QqQkk";
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND)
-                .setType("text/plain")
-                .putExtra(Intent.EXTRA_SUBJECT, "Check out this movie trailer: ");
-
-        String trailerUrl = NetworkUtils.buildYouTubeTrailerUrl(trailerSpiritedAwayUrl);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, trailerUrl);
-
-        Log.d(LOG_TAG, "Trailer URL: " + trailerUrl);
-
-        return shareIntent;
-    }
 }

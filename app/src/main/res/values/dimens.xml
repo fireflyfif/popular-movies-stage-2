@@ -12,4 +12,6 @@
     <dimen name="divider_height">1dp</dimen>
     <dimen name="progress_bar_size">42dp</dimen>
     <dimen name="error_msg_padding">16dp</dimen>
+    <dimen name="sheet_text_scrim_height_top">100dp</dimen>
+    <dimen name="sheet_text_scrim_height_bottom">100dp</dimen>
 </resources>

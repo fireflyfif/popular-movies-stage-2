@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Popular Movies</string>
+    <string name="app_name">Cinema Home</string>
 
     <string name="menu_settings">Settings</string>
 
@@ -43,4 +43,7 @@
     <string name="no_trailers">No Trailers for this movie</string>
     <string name="no_reviews">No Reviews for this movie</string>
     <string name="share_settings">Share</string>
+    <string name="movie_trailer_title">Title of the Movie Trailer</string>
+    <string name="no_favorite_movies">No movies saved to Favorites.\nAdd movies to your list.</string>
+    <string name="sort_movies_title">Sort Movies</string>
 </resources>

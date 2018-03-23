@@ -2,30 +2,23 @@ package com.example.android.popularmovies.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.models.Reviews;
-import com.example.android.popularmovies.models.Videos;
 
 import java.util.List;
 
 /**
+ * Adapter that feeds the RecyclerView that displays Movie reviews
  * Created by fifiv on 16/03/2018.
  */
 
@@ -35,17 +28,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     private List<Reviews> mReviewList;
 
 
-
-    //private final ReviewsAdapterOnClickHandler mClickHandler;
-
-    public interface ReviewsAdapterOnClickHandler {
-        void onClick(Reviews reviews);
-    }
-
     public ReviewAdapter(Context context, List<Reviews> reviewsList) {
         mContext = context;
         mReviewList = reviewsList;
-        //mClickHandler = clickHandler;
     }
 
     @NonNull
@@ -55,7 +40,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
                 R.layout.review_item, parent, false);
 
         ReviewViewHolder holder = new ReviewViewHolder(view);
-
 
         return holder;
     }

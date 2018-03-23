@@ -4,4 +4,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:scaleType="centerCrop"
+    android:src="@drawable/movie_placeholder_01"
     android:contentDescription="@string/movie_poster_description" />

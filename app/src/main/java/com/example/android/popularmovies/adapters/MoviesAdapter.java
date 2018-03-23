@@ -2,7 +2,6 @@ package com.example.android.popularmovies.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,20 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.android.popularmovies.data.MovieContract;
-import com.example.android.popularmovies.models.MovieDbResponse;
-import com.example.android.popularmovies.models.Movies;
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.models.Movies;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
 /**
+ * Adapter that feeds the RecyclerView that displays Movie posters o the Main Layout
  * Created by fifiv on 31/01/2018.
  */
 
@@ -103,8 +100,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
 
         Picasso.with(mContext)
                 .load(posterPathUrlString)
-                .placeholder(R.drawable.movie_poster)
-                .error(R.drawable.movie_poster)
+                .placeholder(R.drawable.movie_placeholder_01)
+                .error(R.drawable.movie_placeholder_01)
                 .into(holder.moviePosterThumbnail);
     }
 

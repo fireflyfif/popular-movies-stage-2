@@ -4,10 +4,8 @@ package com.example.android.popularmovies.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ShareCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,8 +31,6 @@ import com.example.android.popularmovies.models.ReviewsDbResponse;
 import com.example.android.popularmovies.models.Videos;
 import com.example.android.popularmovies.models.VideosDbResponse;
 import com.example.android.popularmovies.utilities.MainApplication;
-import com.example.android.popularmovies.utilities.MovieDbApiManager;
-import com.example.android.popularmovies.utilities.MovieDbInterface;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -43,7 +39,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.HttpUrl;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,18 +55,7 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
     private static final String LOG_TAG = MovieDetailActivityFragment.class.getSimpleName();
     private static final String MOVIE_DETAILS_KEY = "movie_parcel";
     private static final String SAVE_STATE_IS_FAV = "is_favorite";
-
-    private boolean mIsFavMovie;
-
-    private List<Videos> mVideoList;
-    private VideoAdapter mVidAdapter;
-    public static Videos sVideos;
     public static Movies sMovie;
-    private String mMovieId;
-
-    private List<Reviews> mReviewList;
-    private ReviewAdapter mReviewAdapter;
-
     @BindView(R.id.scroll_view)
     ScrollView mScrollView;
     @BindView(R.id.movie_poster_detail)
@@ -90,7 +74,6 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
     TextView mMovieGenres;
     @BindView(R.id.genres_label)
     TextView mGenresLabel;
-
     // Trailer Views
     @BindView(R.id.video_cardView)
     View videoView;
@@ -100,8 +83,6 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
     RecyclerView mTrailerRecyclerView;
     @BindView(R.id.error_message_videos)
     TextView mErrorMessageTrailers;
-
-
     // Review Views
     @BindView(R.id.review_cardView)
     View reviewView;
@@ -110,7 +91,13 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
     @BindView(R.id.movie_review_rv)
     RecyclerView mReviewRecyclerView;
     @BindView(R.id.error_message_review)
-    TextView mErrorMessage;
+    TextView mErrorMessageReviews;
+    private boolean mIsFavMovie;
+    private List<Videos> mVideoList;
+    private VideoAdapter mVidAdapter;
+    private String mMovieId;
+    private List<Reviews> mReviewList;
+    private ReviewAdapter mReviewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager
@@ -118,6 +105,11 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
     public MovieDetailActivityFragment() {
     }
 
+    /**
+     * onCreate called before onCreateView
+     *
+     * @param savedInstanceState Saves non-persistent, dynamic data
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,6 +139,7 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         // Set the Reviews in Recycler View
         mReviewList = new ArrayList<>();
 
+        // Show the Progress Bars by default
         mTrailerPB.setVisibility(View.VISIBLE);
         mReviewPB.setVisibility(View.VISIBLE);
 
@@ -177,9 +170,6 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         // Display the current selected movie title on the Action Bar
         getActivity().setTitle(movies.getMovieTitle());
 
-        // Set title to the current Movie
-        //collapsingToolbarLayout.setTitle(movies.getMovieTitle());
-
         // Set original to the current Movie
         mMovieOriginalTitle.setText(movies.getMovieOriginalTitle());
 
@@ -191,8 +181,8 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         // Display the poster image
         Picasso.with(mMoviePoster.getContext())
                 .load(posterPathUrlString)
-                .placeholder(R.drawable.movie_poster)
-                .error(R.drawable.movie_poster)
+                .placeholder(R.drawable.movie_placeholder_01)
+                .error(R.drawable.movie_placeholder_01)
                 .into(mMoviePoster);
 
         // Set synopsis to the current Movie
@@ -215,14 +205,18 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
                 Log.d(LOG_TAG, "No Genres");
                 mMovieGenres.setText(R.string.no_genres);
             }
-        } else  {
+        } else {
             mGenresLabel.setVisibility(View.INVISIBLE);
             mMovieGenres.setText("");
         }
     }
 
 
-
+    /**
+     * Method that loads movie trailers from the MovieDb API in a background thread using Retrofit
+     *
+     * @param movieId Gets the movie Id to fetch trailers for the selected movie
+     */
     private void loadTrailers(String movieId) {
 
         MainApplication.apiManager.getTrailers(movieId, BuildConfig.API_KEY,
@@ -242,6 +236,7 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
                             mVideoList = response.body().getResults();
                             Log.d(LOG_TAG, "Number of trailers: " + mVideoList.size());
 
+                            // If there is no trailers show a message
                             if (mVideoList.size() == 0) {
                                 mErrorMessageTrailers.setText(R.string.no_trailers);
                                 mErrorMessageTrailers.setVisibility(View.VISIBLE);
@@ -281,6 +276,12 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
                 });
     }
 
+    /**
+     * Method that handles responses to clicks from the movie trailer item and
+     * sends intent to open a video.
+     *
+     * @param videos Creates an object of Videos
+     */
     @Override
     public void onClick(Videos videos) {
 
@@ -296,6 +297,11 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         Log.d(LOG_TAG, "Trailer URL: " + trailerUrl);
     }
 
+    /**
+     * Method that loads movie reviews from the MovieDb API in a background thread using Retrofit
+     *
+     * @param movieId Gets the movie Id to fetch trailers for the selected movie
+     */
     private void loadReviews(String movieId) {
 
         MainApplication.apiManager.getReviews(movieId, BuildConfig.API_KEY,
@@ -316,9 +322,10 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
                             mReviewList = response.body().getResults();
                             Log.d(LOG_TAG, "Number of reviews: " + mReviewList.size());
 
+                            // If there is no reviews show a message
                             if (mReviewList.size() == 0) {
-                                mErrorMessage.setText(R.string.no_reviews);
-                                mErrorMessage.setVisibility(View.VISIBLE);
+                                mErrorMessageReviews.setText(R.string.no_reviews);
+                                mErrorMessageReviews.setVisibility(View.VISIBLE);
                             }
 
                             if (mReviewAdapter == null) {
@@ -361,9 +368,11 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
     private void showErrorMessage() {
         // Hide the currently visible data
         mTrailerRecyclerView.setVisibility(View.INVISIBLE);
+        mReviewRecyclerView.setVisibility(View.INVISIBLE);
 
         // Show the error message
-        mErrorMessage.setVisibility(View.VISIBLE);
+        mErrorMessageReviews.setVisibility(View.VISIBLE);
+        mErrorMessageTrailers.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -388,6 +397,11 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Method that creates Intent to share movie trailer or movie information
+     *
+     * @return Intent
+     */
     private Intent createShareMovieIntent() {
 
         // Hard-coded video key to Spirited Away
@@ -412,8 +426,6 @@ public class MovieDetailActivityFragment extends Fragment implements VideoAdapte
             shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this movie: " + movieTitle +
                     "\nOverview: " + movieOverview);
         }
-
         return shareIntent;
     }
-
 }

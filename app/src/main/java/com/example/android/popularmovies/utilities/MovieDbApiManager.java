@@ -1,9 +1,6 @@
 package com.example.android.popularmovies.utilities;
 
-import android.content.Context;
-
 import com.example.android.popularmovies.models.MovieDbResponse;
-import com.example.android.popularmovies.models.Movies;
 import com.example.android.popularmovies.models.ReviewsDbResponse;
 import com.example.android.popularmovies.models.VideosDbResponse;
 
@@ -20,7 +17,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
  *
  * Link to tutorial: http://codingsonata.com/retrofit-tutorial-android-part-1-introduction/
  */
-
 public class MovieDbApiManager {
 
     private static Retrofit sRetrofit = null;
@@ -63,16 +59,4 @@ public class MovieDbApiManager {
         Call<ReviewsDbResponse> reviewCall = movieDbInterface.getReviews(movieId, apiKey);
         reviewCall.enqueue(callback);
     }
-
-
-    /*public static Retrofit getClient() throws SecurityException {
-
-        if (sRetrofit == null) {
-            sRetrofit = new Retrofit.Builder()
-                    .baseUrl(NetworkUtils.MOVIES_BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        }
-        return sRetrofit;
-    }*/
 }

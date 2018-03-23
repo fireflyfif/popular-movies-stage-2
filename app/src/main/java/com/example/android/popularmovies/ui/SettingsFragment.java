@@ -15,7 +15,7 @@ import com.example.android.popularmovies.R;
  */
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
-        SharedPreferences.OnSharedPreferenceChangeListener{
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
 
     @Override
@@ -29,7 +29,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             }
         }
     }
-
 
     @Override
     public void onCreatePreferences(Bundle bundle, String string) {

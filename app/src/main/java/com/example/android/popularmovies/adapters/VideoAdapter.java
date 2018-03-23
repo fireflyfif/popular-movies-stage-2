@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 /**
+ * Adapter that feeds the RecyclerView that displays Movie trailers
  * Created by fifiv on 15/03/2018.
  */
 
@@ -60,8 +61,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
         Picasso.with(mContext)
                 .load(videoThumbnailUrl)
-                .placeholder(R.drawable.movie_poster)
-                .error(R.drawable.movie_poster)
+                .placeholder(R.drawable.movie_video_02)
+                .error(R.drawable.movie_video_02)
                 .into(holder.mVideoThumbnail);
 
         holder.mVideoTitle.setText(videos.getName());
