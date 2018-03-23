@@ -11,8 +11,29 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <!-- for settings preference theme -->
+        <!-- Settings preference theme -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
+
+    <!-- Divider style. -->
+    <style name="divider" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_height</item>
+        <item name="android:layout_marginTop">@dimen/margin_vertical_16dp</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
+    <!-- Text style for labels in the detail activity. -->
+    <style name="label_detail_text" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">@dimen/margin_horizontal_16dp</item>
+        <item name="android:layout_marginRight">@dimen/margin_horizontal_16dp</item>
+        <item name="android:layout_marginLeft">@dimen/margin_horizontal_16dp</item>
+        <item name="android:layout_marginStart">@dimen/margin_horizontal_16dp</item>
+        <item name="android:layout_marginTop">@dimen/margin_vertical_8dp</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
 </resources>

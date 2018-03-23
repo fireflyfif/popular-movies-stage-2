@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Cinema Home</string>
+    <string name="app_name">Cinema On</string>
 
     <string name="menu_settings">Settings</string>
 
@@ -46,4 +46,8 @@
     <string name="movie_trailer_title">Title of the Movie Trailer</string>
     <string name="no_favorite_movies">No movies saved to Favorites.\nAdd movies to your list.</string>
     <string name="sort_movies_title">Sort Movies</string>
+    <string name="trailers_label">Trailers</string>
+    <string name="reviews_label">Reviews</string>
+    <string name="trailer_thumbnail_content_description">Trailer placeholder image for the current movie</string>
+    <string name="play_image_content_description">Image button that display play button</string>
 </resources>

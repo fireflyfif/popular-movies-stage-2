@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:padding="6dp"
+    android:padding="@dimen/frame_layout_padding"
     tools:showIn="@layout/fragment_activity_detail_movie">
 
     <android.support.v7.widget.RecyclerView

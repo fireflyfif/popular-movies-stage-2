@@ -3,6 +3,8 @@ package com.example.android.popularmovies.utilities;
 import android.util.Log;
 
 /**
+ * Utility class that holds constants with base urls and methods that build string urls
+ *
  * Created by fifiv on 06/02/2018.
  */
 
@@ -33,10 +35,12 @@ public final class NetworkUtils {
 
 
     /**
+     * Method that builds the poster URL
+     * The poster path looks like this:
+     * http://image.tmdb.org/t/p/w342//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg
      *
-     *
-     * @param posterPath
-     * @return
+     * @param posterPath Is a unique path key for every movie
+     * @return String of this URL
      */
     public static String buildPosterPathUrl(String posterPath) {
 
@@ -47,10 +51,10 @@ public final class NetworkUtils {
     }
 
     /**
+     * Method that builds the path to the movie backdrop image URL (second image of the movie)
      *
-     *
-     * @param backdropPath
-     * @return
+     * @param backdropPath Is a unique path key for every movie
+     * @return String of this URL
      */
     public static String buildPosterBackdropUrl(String backdropPath) {
         String backdropUrlString = IMAGES_BASE_URL + FILE_SIZE_BIGGER + backdropPath;
@@ -60,10 +64,11 @@ public final class NetworkUtils {
     }
 
     /**
+     * Method that builds the path to the YouTube trailer URL
+     * example: https://www.youtube.com/watch?v=enLIWGK9cC8
      *
-     *
-     * @param videoKey
-     * @return
+     * @param videoKey Unique key for every movie
+     * @return String of this URL
      */
     public static String buildYouTubeTrailerUrl(String videoKey) {
         String youTubeTrailerUrl = YOUTUBE_BASE_URL + YOUTUBE_WATCH_PARAM + videoKey;
@@ -73,10 +78,11 @@ public final class NetworkUtils {
     }
 
     /**
+     * Method that builds the path to the YouTube thumbnail for every movie
+     * example: https://img.youtube.com/vi/8ndhidEmUbI/0.jpg
      *
-     *
-     * @param videoKey
-     * @return
+     * @param videoKey Unique key for every movie
+     * @return String of this URL
      */
     public static String buildYouTubeThumbnailUrl(String videoKey) {
 

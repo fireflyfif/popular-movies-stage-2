@@ -14,4 +14,10 @@
     <dimen name="error_msg_padding">16dp</dimen>
     <dimen name="sheet_text_scrim_height_top">100dp</dimen>
     <dimen name="sheet_text_scrim_height_bottom">100dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
+    <dimen name="frame_layout_padding">6dp</dimen>
+    <dimen name="margin_6dp">6dp</dimen>
+    <dimen name="padding_10dp">10dp</dimen>
+    <dimen name="padding_horizontal_6dp">6dp</dimen>
+    <dimen name="padding_vertical_6dp">6dp</dimen>
 </resources>
