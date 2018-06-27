@@ -1,10 +1,11 @@
 # Popular Movies App 
-### Project 02, Part of the Android Developer Nanodegree Program by Udacity
+## Project 02, Part of the Android Developer Nanodegree Program by Udacity
 
 ![alt text][logo]
 
 [logo]: https://github.com/fireflyfif/popular-movies-stage-2/blob/master/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
 
+### App Description
 This app displays popular and top rated movies from [**The Movie Db**](https://www.themoviedb.org/) API. 
 Details of each movie is displayed in the detail screen, where the user can view listed trailers for each 
 movie and to read all reviews. Allows the user to safe movie in their favorites collection storring it 
